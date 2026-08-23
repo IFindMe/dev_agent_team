@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install the 12 dev_agent_team opencode agents into a local opencode config.
+#
+# Usage:   ./scripts/install.sh
+# Override target dir with: OPENCODE_AGENTS_DIR=/some/dir ./scripts/install.sh
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TARGET="${OPENCODE_AGENTS_DIR:-$HOME/.config/opencode/agents}"
+EXPECTED_COUNT=12
+
+echo "==> dev_agent_team installer"
+echo "==> Source:      $ROOT/agents"
+echo "==> Destination: $TARGET"
+
+mkdir -p "$TARGET"
+
+STAMP="$(date +%Y%m%d_%H%M%S)"
+BACKUP_DIR="$TARGET/.backup/$STAMP"
+
+# Back up any pre-existing same-named files before touching them.
+backed_up=0
+for src_path in "$ROOT"/agents/*.md; do
+  name="$(basename "$src_path")"
+  if [[ -e "$TARGET/$name" ]]; then
+    mkdir -p "$BACKUP_DIR"
+    cp -p "$TARGET/$name" "$BACKUP_DIR/$name"
+    echo "    backed up: $name -> .backup/$STAMP/$name"
+    backed_up=$((backed_up + 1))
+  fi
+done
+
+# Copy the agents.
+copied=0
+for src_path in "$ROOT"/agents/*.md; do
+  name="$(basename "$src_path")"
+  cp -p "$src_path" "$TARGET/$name"
+  echo "    copied: $name"
+  copied=$((copied + 1))
+done
+
+# Fail loudly if the expected set was not installed.
+if (( copied != EXPECTED_COUNT )); then
+  echo "ERROR: expected $EXPECTED_COUNT agent files, but installed $copied. Aborting." >&2
+  exit 1
+fi
+echo "==> Installed $copied/$EXPECTED_COUNT agents."
+
+if (( backed_up > 0 )); then
+  echo "==> Previous versions of $backed_up file(s) saved under: $BACKUP_DIR"
+fi
+
+# Post-install reminder (non-fatal if opencode is absent).
+if command -v opencode >/dev/null 2>&1; then
+  echo "==> Reminder: restart opencode, then run: opencode agent list"
+else
+  echo "==> Note: 'opencode' not found on PATH; skipped restart/verify reminder."
+fi
+
+echo "==> Done."
