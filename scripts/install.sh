@@ -9,6 +9,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${OPENCODE_AGENTS_DIR:-$HOME/.config/opencode/agents}"
 EXPECTED_COUNT=12
+KEEP_BACKUPS=5
 
 echo "==> dev_agent_team installer"
 echo "==> Source:      $ROOT/agents"
@@ -16,12 +17,25 @@ echo "==> Destination: $TARGET"
 
 mkdir -p "$TARGET"
 
-STAMP="$(date +%Y%m%d_%H%M%S)"
+# Resolve the agent source list into an array up front (nullglob: no match
+# means an empty array, not a literal glob string).
+shopt -s nullglob
+AGENT_FILES=( "$ROOT"/agents/*.md )
+shopt -u nullglob
+
+# Gate BEFORE any copying: refuse to touch anything unless the full set
+# exists at the source.
+if (( ${#AGENT_FILES[@]} < EXPECTED_COUNT )); then
+  echo "ERROR: expected $EXPECTED_COUNT agent files in $ROOT/agents, found ${#AGENT_FILES[@]}. Aborting." >&2
+  exit 1
+fi
+
+STAMP="$(date +%Y%m%d_%H%M%S)_$$"  # PID suffix keeps rapid reruns distinct
 BACKUP_DIR="$TARGET/.backup/$STAMP"
 
 # Back up any pre-existing same-named files before touching them.
 backed_up=0
-for src_path in "$ROOT"/agents/*.md; do
+for src_path in "${AGENT_FILES[@]}"; do
   name="$(basename "$src_path")"
   if [[ -e "$TARGET/$name" ]]; then
     mkdir -p "$BACKUP_DIR"
@@ -31,9 +45,26 @@ for src_path in "$ROOT"/agents/*.md; do
   fi
 done
 
+# Retention cap: after creating a new backup dir, keep only the most recent
+# stamp dirs. Stamp names sort chronologically, so name order == age order.
+# Only entries matching the stamp pattern are considered; all writes stay
+# inside $TARGET/.backup/.
+if (( backed_up > 0 )); then
+  shopt -s nullglob
+  backup_dirs=( "$TARGET"/.backup/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9]_* )
+  shopt -u nullglob
+  excess=$(( ${#backup_dirs[@]} - KEEP_BACKUPS ))
+  if (( excess > 0 )); then
+    for prune_dir in "${backup_dirs[@]:0:excess}"; do
+      rm -rf "$prune_dir"
+      echo "    pruned old backup: .backup/$(basename "$prune_dir")"
+    done
+  fi
+fi
+
 # Copy the agents.
 copied=0
-for src_path in "$ROOT"/agents/*.md; do
+for src_path in "${AGENT_FILES[@]}"; do
   name="$(basename "$src_path")"
   cp -p "$src_path" "$TARGET/$name"
   echo "    copied: $name"

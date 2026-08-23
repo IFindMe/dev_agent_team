@@ -16,7 +16,8 @@ system:
 The agent definitions live in `agents/` and are copied verbatim into your
 opencode config directory by `scripts/install.sh`. The installer is idempotent:
 re-running it is safe, and it backs up any pre-existing files it would
-overwrite into a timestamped folder under `<target>/.backup/`.
+overwrite into a timestamped folder under `<target>/.backup/`, keeping only
+the 5 most recent backup folders.
 
 ## Repository layout
 
