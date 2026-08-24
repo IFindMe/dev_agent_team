@@ -15,8 +15,6 @@ echo "==> dev_agent_team installer"
 echo "==> Source:      $ROOT/agents"
 echo "==> Destination: $TARGET"
 
-mkdir -p "$TARGET"
-
 # Resolve the agent source list into an array up front (nullglob: no match
 # means an empty array, not a literal glob string).
 shopt -s nullglob
@@ -29,6 +27,8 @@ if (( ${#AGENT_FILES[@]} < EXPECTED_COUNT )); then
   echo "ERROR: expected $EXPECTED_COUNT agent files in $ROOT/agents, found ${#AGENT_FILES[@]}. Aborting." >&2
   exit 1
 fi
+
+mkdir -p "$TARGET"
 
 STAMP="$(date +%Y%m%d_%H%M%S)_$$"  # PID suffix keeps rapid reruns distinct
 BACKUP_DIR="$TARGET/.backup/$STAMP"
@@ -56,6 +56,7 @@ if (( backed_up > 0 )); then
   excess=$(( ${#backup_dirs[@]} - KEEP_BACKUPS ))
   if (( excess > 0 )); then
     for prune_dir in "${backup_dirs[@]:0:excess}"; do
+      [ -d "$prune_dir" ] || continue
       rm -rf "$prune_dir"
       echo "    pruned old backup: .backup/$(basename "$prune_dir")"
     done
