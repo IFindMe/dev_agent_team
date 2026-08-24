@@ -2,7 +2,16 @@
 name: builder
 description: Scope-controlled implementation agent for approved changes
 mode: subagent
+# NOTE: Bash permission rules apply to EACH command segment independently (tree-sitter split);
+#       pipelines need every segment allowlisted incl. tails (head/wc/sort/grep/rg). Prefer single commands.
+# CAVEAT: an in-session "always allow" approval injects pattern:* allow that overrides these denies
+#         for every agent until the server restarts.
 permission:
+  edit: allow
+  bash: allow
+  webfetch: deny
+  websearch: deny
+  skill: deny
   task: deny
 ---
 

@@ -1,1 +1,8 @@
-AgentsReport/
+# Ignore all agent-report workspace CONTENTS, but keep per-agent report
+# directories seeded (.gitkeep) so sanctioned report writes never need mkdir.
+# NOTE: `AgentsReport/` + `!AgentsReport/` would NOT work: un-ignoring the
+# directory makes every plain file inside trackable, and git cannot
+# re-include files under an ignored parent directory.
+AgentsReport/**
+!AgentsReport/**/
+!AgentsReport/**/.gitkeep

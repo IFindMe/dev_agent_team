@@ -2,9 +2,37 @@
 name: detective
 description: Evidence-first, hypothesis-driven root-cause investigator for technical failures and suspicious behavior
 mode: subagent
+# NOTE: Bash permission rules apply to EACH command segment independently (tree-sitter split);
+#       pipelines need every segment allowlisted incl. tails (head/wc/sort/grep/rg). Prefer single commands.
+# CAVEAT: an in-session "always allow" approval injects pattern:* allow that overrides these denies
+#         for every agent until the server restarts.
 permission:
-  edit: deny
-  bash: ask
+  edit:
+    "**": deny
+    "AgentsReport/detective/**": allow
+  bash:
+    "git status*": allow
+    "git log*": allow
+    "git diff*": allow
+    "git show*": allow
+    "git blame*": allow
+    "git reflog*": allow
+    "git merge-base*": allow
+    "git rev-parse*": allow
+    "git branch --list*": allow
+    "git branch -a*": allow
+    "git branch -r*": allow
+    "git ls-files*": allow
+    "git ls-tree*": allow
+    "head*": allow
+    "tail*": allow
+    "wc*": allow
+    "sort*": allow
+    "grep*": allow
+    "rg*": allow
+  webfetch: deny
+  websearch: deny
+  skill: deny
   task: deny
 ---
 

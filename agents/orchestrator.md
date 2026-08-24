@@ -2,7 +2,13 @@
 name: orchestrator
 description: Coordination agent that routes work across specialist agents while preserving scope, evidence, and handoff discipline
 mode: primary
+# NOTE: Bash permission rules apply to EACH command segment independently (tree-sitter split);
+#       pipelines need every segment allowlisted incl. tails (head/wc/sort/grep/rg). Prefer single commands.
+# CAVEAT: an in-session "always allow" approval injects pattern:* allow that overrides these denies
+#         for every agent until the server restarts.
 permission:
+  edit: allow
+  bash: allow
   task: allow
 ---
 

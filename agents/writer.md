@@ -2,20 +2,40 @@
 name: writer
 description: Evidence-driven documentation specialist responsible for creating technical documentation, API references, user guides, ADRs, and release notes
 mode: subagent
+# NOTE: Bash permission rules apply to EACH command segment independently (tree-sitter split);
+#       pipelines need every segment allowlisted incl. tails (head/wc/sort/grep/rg). Prefer single commands.
+# CAVEAT: an in-session "always allow" approval injects pattern:* allow that overrides these denies
+#         for every agent until the server restarts.
 permission:
-  edit: allow
+  edit:
+    "**": deny
+    "docs/**": allow
+    "README*": allow
+    "AgentsReport/writer/**": allow
   bash:
     "*": deny
     "git status*": allow
     "git log*": allow
     "git diff*": allow
     "git show*": allow
+    "git blame*": allow
+    "git reflog*": allow
+    "git merge-base*": allow
+    "git rev-parse*": allow
     "git branch --list*": allow
     "git branch -a*": allow
     "git branch -r*": allow
-    "git rev-parse*": allow
     "git ls-files*": allow
     "git ls-tree*": allow
+    "head*": allow
+    "tail*": allow
+    "wc*": allow
+    "sort*": allow
+    "grep*": allow
+    "rg*": allow
+  webfetch: deny
+  websearch: deny
+  skill: deny
   task: deny
 ---
 
