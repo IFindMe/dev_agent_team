@@ -17,11 +17,15 @@ else
   echo "FAIL engine-signature NOT found — binary changed, re-extract Wildcard.match"; exit 1
 fi
 command -v node >/dev/null || { echo "FAIL no node runtime"; exit 2; }
-HOME="$T" node -e '
+if HOME="$T" node -e '
 function m(i,p){if(i)i=i.replaceAll("\\","/");if(p)p=p.replaceAll("\\","/");
 let l=p.replace(/[.+^${}()|[\]\\]/g,"\\$&").replace(/\*/g,".*").replace(/\?/g,".");
 if(l.endsWith(" .*"))l=l.slice(0,-3)+"( .*)?";return new RegExp("^"+l+"$","s").test(i)}
 const C=[["**/AgentsReport/**","AgentsReport/toolsmith/x.md",false],["AgentsReport/**","AgentsReport/toolsmith/x.md",true],
 ["**","AgentsReport/x.md",true],["git status*","git status",true],["*","head",true],["edit","edit",true]];
 let f=0;for(const[p,i,w]of C){const g=m(i,p);g===w||f++;console.log((g===w?"PASS":"FAIL")+" match("+JSON.stringify(i)+","+JSON.stringify(p)+")="+g+" want "+w)}
-process.exit(f?1:0)' && echo "RESULT: engine matches documented semantics" || echo "RESULT: DRIFT — re-read binary"
+process.exit(f?1:0)'; then
+  echo "RESULT: engine matches documented semantics"
+else
+  echo "RESULT: DRIFT — re-read binary"; exit 1
+fi
