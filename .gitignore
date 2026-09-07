@@ -6,3 +6,6 @@
 AgentsReport/**
 !AgentsReport/**/
 !AgentsReport/**/.gitkeep
+
+# Local opencode session artifacts (never tracked)
+session
