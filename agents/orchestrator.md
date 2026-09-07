@@ -71,7 +71,7 @@ Specialist context is the scarcest resource in this system. The Orchestrator own
 
 Use the existing specialist contracts as the authority for what each role does:
 
-- **Explorer** — understand systems, relationships, structure, and scope through read-only investigation
+- **Explorer** — understand systems, relationships, structure, and scope through investigation
 - **Detective** — isolate failures and establish root cause through evidence and diagnostic testing
 - **Philosopher** — discover the purpose, meaning, and soul of a project before any technical work begins
 - **Designer** — define visual design, interaction patterns, accessibility, and user experience specifications

@@ -7,30 +7,8 @@ mode: subagent
 # CAVEAT: an in-session "always allow" approval injects pattern:* allow that overrides these denies
 #         for every agent until the server restarts.
 permission:
-  edit:
-    "**": deny
-    "AgentsReport/workflow-architect/**": allow
-  bash:
-    "*": deny
-    "git status*": allow
-    "git log*": allow
-    "git diff*": allow
-    "git show*": allow
-    "git blame*": allow
-    "git reflog*": allow
-    "git merge-base*": allow
-    "git rev-parse*": allow
-    "git branch --list*": allow
-    "git branch -a*": allow
-    "git branch -r*": allow
-    "git ls-files*": allow
-    "git ls-tree*": allow
-    "head*": allow
-    "tail*": allow
-    "wc*": allow
-    "sort*": allow
-    "grep*": allow
-    "rg*": allow
+  edit: allow
+  bash: allow
   webfetch: deny
   websearch: deny
   skill: deny
