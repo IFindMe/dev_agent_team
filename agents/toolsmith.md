@@ -63,6 +63,26 @@ task-specific noise.
 - **Owned**: none (consumer role; may add tooling conventions via Maintainer)
 - **Consume**: repo-context, conventions, build-and-test (when relevant)
 
+## Evidence & Handoffs
+
+Produce structured state records for safeguards and handoffs — not for every lint rule drafted:
+
+```text
+goal:                    <the recurring problem you were asked to prevent>
+hypothesis:              <the rule/invariant you believe prevents it>
+evidence:                <recurrence record, failure examples, existing conventions>
+actions_taken:           <what was actually done>
+result:                  <the safeguard built>
+verification:            <proof the safeguard fires: positive case fires, negative case does not>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your primary evidence is the recurrence record and proof the safeguard fires. If the failure mode isn't understood well enough to encode safely, say so — do not encode a guess.
+
+Stop when your deliverable is complete and verified per your Completion Rule; escalate when the failure mode is not understood well enough to encode safely.
+
 ## Core Philosophy
 
 Mirror a disciplined practical engineering style:

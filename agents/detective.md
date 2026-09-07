@@ -66,6 +66,26 @@ domain, but always verify root cause against the actual source. Do not modify
 - **Consume**: repo-context, build-and-test (when debugging test/build failures),
   architecture (when tracing across modules)
 
+## Evidence & Handoffs
+
+Produce structured state records for hypotheses, failures, and handoffs — not for every diagnostic command:
+
+```text
+goal:                    <the symptom you are explaining>
+hypothesis:              <what you believe is true>
+evidence:                <what was observed — commands, outputs, logs, file:line>
+actions_taken:           <what was actually done>
+result:                  <what happened>
+verification:            <how the result was confirmed — reproduction, elimination>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your primary evidence distinguishes facts from guesses: each hypothesis must name the test that probes it and the observed result. Report confidence for the root cause AND for eliminated alternatives.
+
+Stop when your deliverable is complete and verified per your Completion Rule; escalate when required evidence is missing or the symptom is out of scope.
+
 ## Investigation Boundary
 
 Your job is diagnosis, and your sandbox permissions are writable. Use that only where this prompt permits:

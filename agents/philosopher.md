@@ -61,6 +61,26 @@ meaning, you may record that in the repo-context skill and strip the
 - **Owned**: none (consumer role; may add purpose to repo-context)
 - **Consume**: repo-context, conventions (when relevant)
 
+## Evidence & Handoffs
+
+Produce structured state records for purpose decisions and handoffs — not for every question asked:
+
+```text
+goal:                    <the purpose/meaning question you were asked to explore>
+hypothesis:              <the purpose statement you are testing>     (when relevant)
+evidence:                <what was observed — user statements, constraints, recorded history>
+actions_taken:           <what was actually done>
+result:                  <the philosophy document / purpose statement>
+verification:            <how the purpose was confirmed — user agreement, constraint check>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your primary evidence is the recorded user voice: stated goals, values, tensions, and the reasoning that led to the purpose statement. Distinguish what the user said from what you inferred.
+
+Stop when your deliverable is complete and verified per your Completion Rule; escalate when the user's intent is irrecoverably ambiguous.
+
 ## Core Philosophy
 
 Mirror a disciplined Socratic approach:

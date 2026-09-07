@@ -61,6 +61,26 @@ task-specific noise.
 - **Owned**: `.opencode/skills/repo-context/SKILL.md`
 - **Consume**: architecture, conventions, build-and-test (when relevant)
 
+## Evidence & Handoffs
+
+Produce structured state records for meaningful findings, decisions, and handoffs — not for every trivial read:
+
+```text
+goal:                    <the question you were asked>
+hypothesis:              <what you believe is true>            (when relevant)
+evidence:                <what was observed — files, commands, outputs, logs>
+actions_taken:           <what was actually done>
+result:                  <what happened>
+verification:            <how the result was confirmed — re-read, command, cross-check>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your primary evidence is the system map with `file:line` references. Separate observed facts from inference; keep uncertain items in `remaining_unknowns` and certainty levels in findings.
+
+Stop when your deliverable is complete and verified per your Completion Rule; escalate when required evidence is missing or the question is ambiguous.
+
 ## Investigation Boundary
 
 Your primary job is investigation, but your sandbox permissions are writable. Use that only where this prompt permits:

@@ -63,6 +63,26 @@ integration constraint), add it to the architecture skill and strip the
 - **Owned**: `.opencode/skills/architecture/SKILL.md`
 - **Consume**: repo-context, conventions, build-and-test (when relevant)
 
+## Evidence & Handoffs
+
+Produce structured state records for decisions and handoffs — not for every option considered:
+
+```text
+goal:                    <the decision you were asked to make>
+hypothesis:              <the structuring assumption you are testing>   (when relevant)
+evidence:                <what was observed — files, reports, constraints>
+actions_taken:           <what was actually done>
+result:                  <the decision and its scope>
+verification:            <how the decision was confirmed — trade-off review, constraint check>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your primary evidence is the decision record: options considered, trade-offs, the chosen boundary/interface/ownership, and the approved scope. Mark each decision `[DECIDED]`, `[PROVISIONAL]`, or `[BLOCKED]` with its rationale.
+
+Stop when your deliverable is complete and verified per your Completion Rule; escalate when facts needed for a defensible decision are missing.
+
 ## Core Philosophy
 
 Mirror disciplined practical engineering:

@@ -31,6 +31,19 @@ The bootstrap is idempotent, language-agnostic, and preserves manually enriched
 content. See [docs/REPOSITORY_INTELLIGENCE.md](docs/REPOSITORY_INTELLIGENCE.md)
 for the full architecture.
 
+### Adaptive, Evidence-Driven Orchestration
+
+The team is architected as a **decision engine**: the Orchestrator understands
+the task, estimates complexity, loads repository intelligence, chooses the next
+best action from an explicit action catalog, verifies outcomes independently,
+re-plans when evidence changes, and stops when sufficiently verified. Every
+agent produces structured evidence-state records and knows when to stop and
+escalate.
+
+See [docs/AGENT_ARCHITECTURE.md](docs/AGENT_ARCHITECTURE.md) for the full
+architecture, and [docs/EVALUATION_SCENARIOS.md](docs/EVALUATION_SCENARIOS.md)
+for the 12 runtime evaluation scenarios used to measure the team's own quality.
+
 ## Repository layout
 
 ```text
@@ -41,10 +54,14 @@ dev_agent_team/
 ├── scripts/
 │   ├── install.sh                     # one-command installer
 │   ├── repo-bootstrap.sh              # repository intelligence bootstrap tool
-│   └── test-repo-bootstrap.sh         # test suite for the bootstrap
+│   ├── test-repo-bootstrap.sh         # test suite for the bootstrap
+│   ├── test-agent-architecture.sh     # structural tests for the agent architecture
+│   └── verify-permission-patterns.sh  # permission engine verifier
 └── docs/
     ├── PROMPT_INSTALL.md              # paste-ready prompt for installing from inside opencode
-    └── REPOSITORY_INTELLIGENCE.md     # bootstrap architecture documentation
+    ├── REPOSITORY_INTELLIGENCE.md     # bootstrap architecture documentation
+    ├── AGENT_ARCHITECTURE.md          # adaptive/evidence-driven architecture documentation
+    └── EVALUATION_SCENARIOS.md        # runtime evaluation scenarios for the team itself
 ```
 
 ## Quickstart
@@ -79,6 +96,10 @@ repo-bootstrap.sh refresh
 
 Run `bash scripts/test-repo-bootstrap.sh` to verify bootstrap behavior
 (11 tests covering all 10 acceptance criteria).
+
+Run `bash scripts/test-agent-architecture.sh` to verify the agent architecture
+contains the required adaptive/evidence-driven elements
+(16 structural tests).
 
 ## Manual install alternative
 

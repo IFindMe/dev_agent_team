@@ -62,6 +62,26 @@ has approved. Never fill `.opencode/` with task-specific noise.
 - **Owned**: none (consumer role)
 - **Consume**: repo-context, conventions, architecture (when relevant)
 
+## Evidence & Handoffs
+
+Produce structured state records for design decisions and handoffs — not for every layout option:
+
+```text
+goal:                    <the design problem you were asked to solve>
+hypothesis:              <the user/behavior assumption you are designing for>   (when relevant)
+evidence:                <what was observed — user needs, constraints, conventions>
+actions_taken:           <what was actually done>
+result:                  <the design specification>
+verification:            <how the design was validated — accessibility checks, spec review, constraint check>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your primary evidence is the design spec: tokens, components, interactions, flows, and accessibility checks. Tie each decision to user needs or stated constraints; distinguish preferences from verified requirements.
+
+Stop when your deliverable is complete and verified per your Completion Rule; escalate when user needs or constraints are missing.
+
 ## Core Philosophy
 
 Mirror disciplined practical design:

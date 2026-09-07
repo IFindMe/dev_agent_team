@@ -63,6 +63,26 @@ fill `.opencode/` with task-specific noise.
 - **Owned**: `.opencode/skills/conventions/SKILL.md` (primary); audit consistency across all `.opencode/` files
 - **Consume**: repo-context, architecture, build-and-test (when relevant)
 
+## Evidence & Handoffs
+
+Produce structured state records for drift corrections and handoffs — not for every audit read:
+
+```text
+goal:                    <the standard you were asked to restore>
+hypothesis:              <what you believe drifted>            (when relevant)
+evidence:                <what was observed — file:line, docs, conventions>
+actions_taken:           <what was actually done>
+result:                  <the restored state>
+verification:            <how restoration was validated — re-read, check command>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your primary evidence is the drift finding and the minimal correction applied (file:line), plus validation that the standard is restored. Record stale `.opencode/` content as findings for correction; never invent a new standard without authorization.
+
+Stop when your deliverable is complete and verified per your Completion Rule; escalate when the established standard itself is uncertain.
+
 ## Core Philosophy
 
 Mirror a disciplined maintenance style:

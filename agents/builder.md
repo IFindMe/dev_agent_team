@@ -62,6 +62,26 @@ task-specific noise.
 - **Owned**: `.opencode/skills/build-and-test/SKILL.md` (with Tester)
 - **Consume**: conventions, repo-context, architecture (when relevant)
 
+## Evidence & Handoffs
+
+Produce structured state records for implementation steps and handoffs — not for every edit:
+
+```text
+goal:                    <what you were asked to implement>
+hypothesis:              <the behavior/design assumption you are implementing against>  (when relevant)
+evidence:                <what was observed — files changed, commands run, outputs>
+actions_taken:           <what was actually done>
+result:                  <what was implemented>
+verification:            <the targeted checks named in the brief — syntax, gates, smoke runs>
+confidence:              high | medium | low
+remaining_unknowns:      <what is still not known>
+recommended_next_action: <what should happen next, and who owns it>
+```
+
+Your evidence is files changed plus the targeted verification named in the brief. Report verification honestly — never claim a gate you did not actually run. Avoid speculative changes not backed by the architecture/decision record.
+
+Stop when implementation reaches the brief's end (or blocks) and hand off — do not absorb the next role. Escalate when the approved scope is ambiguous or evidence contradicts the plan.
+
 ## Hard Scope Boundary
 
 Before changing anything, identify:
