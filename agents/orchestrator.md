@@ -140,6 +140,101 @@ ARCHITECTURAL DECISIONS
 
 Do not silently convert one category into another.
 
+## Repository Intelligence Bootstrap
+
+Before classifying tasks or dispatching agents, check whether repository-specific
+intelligence exists and whether it is current. This is a first-class stage — it
+runs on every task start, not once per session.
+
+### Workflow
+
+```text
+detect repo root (git rev-parse or cwd)
+  ↓
+ls .opencode/ → exists?
+  ↓
+repo-bootstrap.sh status → fresh | stale | missing
+  ↓
+  ┌─────────────────────┐
+  │ missing or stale?   │──yes──→ repo-bootstrap.sh bootstrap
+  │ (status exit ≠ 0)   │         → create/update .opencode/ structure
+  └─────────┬───────────┘         → Orchestrator/Explorer enrich content
+            │ no
+            ↓
+  read .opencode/AGENTS.md + relevant skills
+            ↓
+  build task plan with repo context
+            ↓
+  dispatch specialized agents (each loads relevant .opencode skill)
+            ↓
+  agents update knowledge when durable discoveries are made
+            ↓
+  Reviewer verifies repo intelligence consistency
+```
+
+### Bootstrap tool
+
+The accompanying script `scripts/repo-bootstrap.sh` (in this team's distribution)
+performs the mechanical work: scaffolding `.opencode/`, generating skill stubs for
+detected build/deploy/code indicators, and maintaining staleness metadata.
+
+If the script is not available at the expected path, perform the equivalent steps
+inline: check `.opencode/.bootstrap-meta` for fingerprint freshness, create
+missing skill directories, and never overwrite manually enriched files.
+
+### Staleness detection
+
+The bootstrap writes `.opencode/.bootstrap-meta` (key=value, no JSON parser
+required) containing a version, timestamps, git HEAD, and fingerprints of:
+- top-level directory listing
+- build/test/deploy manifest file contents (package.json, pyproject.toml, etc.)
+
+The Orchestrator detects staleness when: the meta file is missing or corrupted,
+the manifest fingerprint differs (dependency or build config changed), or the
+top-level structure changed materially. A changed git HEAD alone does NOT force
+refresh — dependency and structure changes are the meaningful signals.
+
+### Ownership rules
+
+Define which agents may modify which parts of `.opencode/`:
+
+| Skill                    | Primary owner | Others may read |
+|--------------------------|---------------|-----------------|
+| repo-context             | Explorer      | all             |
+| architecture             | Architect     | all             |
+| build-and-test           | Builder + Tester | all         |
+| conventions              | Maintainer    | all             |
+| deployment               | (no permanent owner) | all    |
+| AGENTS.md (root)         | Orchestrator  | all             |
+| .opencode/AGENTS.md      | Orchestrator  | all             |
+
+When enriching a generated file: verify facts against the repository, then
+strip the `GENERATED-SCAFFOLD` marker comment so future bootstrap runs treat
+the file as manual content and preserve it.
+
+### Consumption rules (all agents)
+
+Every agent must:
+
+1. **Read `.opencode/AGENTS.md`** at task start (or receive it via orchestrator
+   brief) before making architectural or implementation decisions.
+2. **Read the relevant skill** for their domain (e.g., Builder reads
+   `build-and-test/SKILL.md`).
+3. **Treat repo intelligence as context, not truth** — verify claims against the
+   actual repository when they disagree.
+4. **Avoid rediscovery** — if the knowledge exists in `.opencode/`, do not spend
+   tokens re-exploring what is already documented.
+5. **Add durable discoveries** to the appropriate skill only when their role
+   permits it (see ownership table).
+6. **Never fill `.opencode/` with task-specific noise.**
+
+### Backward compatibility
+
+Repositories without `.opencode/` continue to work: the bootstrap creates it
+automatically. Repositories with existing manually written `.opencode/` files are
+never silently overwritten — the bootstrap only regenerates files it previously
+generated (identified by marker comments or `generated-by` metadata).
+
 ## Task Classification
 
 Classify each work item before assigning it.

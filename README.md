@@ -19,17 +19,32 @@ re-running it is safe, and it backs up any pre-existing files it would
 overwrite into a timestamped folder under `<target>/.backup/`, keeping only
 the 5 most recent backup folders.
 
+### Repository Intelligence Bootstrap
+
+The team includes a **Repository Intelligence Bootstrap** system: when the
+Orchestrator starts work on an unfamiliar repository, it automatically analyzes
+the repository and generates a local `.opencode/` knowledge layer
+(context, architecture, build/test, conventions, deployment). Every agent then
+reads this pre-analyzed context instead of re-discovering repository fundamentals.
+
+The bootstrap is idempotent, language-agnostic, and preserves manually enriched
+content. See [docs/REPOSITORY_INTELLIGENCE.md](docs/REPOSITORY_INTELLIGENCE.md)
+for the full architecture.
+
 ## Repository layout
 
 ```text
 dev_agent_team/
-├── README.md              # this file
+├── README.md                          # this file
 ├── .gitignore
-├── agents/                # the 13 agent definitions (*.md)
+├── agents/                            # the 13 agent definitions (*.md)
 ├── scripts/
-│   └── install.sh         # one-command installer
+│   ├── install.sh                     # one-command installer
+│   ├── repo-bootstrap.sh              # repository intelligence bootstrap tool
+│   └── test-repo-bootstrap.sh         # test suite for the bootstrap
 └── docs/
-    └── PROMPT_INSTALL.md  # paste-ready prompt for installing from inside opencode
+    ├── PROMPT_INSTALL.md              # paste-ready prompt for installing from inside opencode
+    └── REPOSITORY_INTELLIGENCE.md     # bootstrap architecture documentation
 ```
 
 ## Quickstart
@@ -45,6 +60,25 @@ To install somewhere other than the default location:
 ```bash
 OPENCODE_AGENTS_DIR=/path/to/opencode/agents ./scripts/install.sh
 ```
+
+## Repository bootstrap
+
+After installing the agents, the bootstrap tool is available at
+`scripts/repo-bootstrap.sh`. From inside any target repository:
+
+```bash
+# Check freshness (exit 0=fresh, 1=stale/missing)
+repo-bootstrap.sh status
+
+# Create/update .opencode/ knowledge layer
+repo-bootstrap.sh bootstrap
+
+# Force regenerate generated files
+repo-bootstrap.sh refresh
+```
+
+Run `bash scripts/test-repo-bootstrap.sh` to verify bootstrap behavior
+(11 tests covering all 10 acceptance criteria).
 
 ## Manual install alternative
 
@@ -67,7 +101,7 @@ result: see [docs/PROMPT_INSTALL.md](docs/PROMPT_INSTALL.md).
 ## Requirements
 
 - [opencode](https://opencode.ai) installed (needed to actually use the agents)
-- `bash` and coreutils (`cp`, `mkdir`, `date`) — present on any Linux/macOS system
+- `bash` and coreutils (`cp`, `mkdir`, `date`, `sha256sum` or `cksum`)
 - SSH access to the gitea host for cloning (or an HTTPS remote, if mirrored)
 
 ## Verification
