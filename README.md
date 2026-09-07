@@ -1,17 +1,17 @@
 # dev_agent_team
 
-A distributable package of 12 opencode agent definitions plus a one-command
+A distributable package of 13 opencode agent definitions plus a one-command
 installer, so the same agent team can be set up identically on any machine.
 
 ## What this is
 
 This repository packages a complete multi-agent team for
-[opencode](https://opencode.ai) — 12 role-specialized agents that work as one
+[opencode](https://opencode.ai) — 13 role-specialized agents that work as one
 system:
 
 `architect`, `builder`, `designer`, `detective`, `explorer`, `maintainer`,
 `orchestrator` (primary), `philosopher`, `reviewer`, `tester`, `toolsmith`,
-`writer`.
+`workflow-architect`, `writer`.
 
 The agent definitions live in `agents/` and are copied verbatim into your
 opencode config directory by `scripts/install.sh`. The installer is idempotent:
@@ -25,7 +25,7 @@ the 5 most recent backup folders.
 dev_agent_team/
 ├── README.md              # this file
 ├── .gitignore
-├── agents/                # the 12 agent definitions (*.md)
+├── agents/                # the 13 agent definitions (*.md)
 ├── scripts/
 │   └── install.sh         # one-command installer
 └── docs/
@@ -81,6 +81,6 @@ After installing:
    opencode agent list
    ```
 
-3. You should see exactly **12 agents**: architect, builder, designer,
+3. You should see exactly **13 agents**: architect, builder, designer,
    detective, explorer, maintainer, orchestrator, philosopher, reviewer,
-   tester, toolsmith, writer.
+   tester, toolsmith, workflow-architect, writer.

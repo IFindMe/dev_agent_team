@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install the 12 dev_agent_team opencode agents into a local opencode config.
+# Install the 13 dev_agent_team opencode agents into a local opencode config.
 #
 # Usage:   ./scripts/install.sh
 # Override target dir with: OPENCODE_AGENTS_DIR=/some/dir ./scripts/install.sh
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${OPENCODE_AGENTS_DIR:-$HOME/.config/opencode/agents}"
-EXPECTED_COUNT=12
+EXPECTED_COUNT=13
 KEEP_BACKUPS=5
 
 echo "==> dev_agent_team installer"
