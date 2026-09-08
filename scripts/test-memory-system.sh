@@ -235,6 +235,92 @@ if [ "$SUBAGENT_SKILL_OK" = "1" ]; then
 fi
 
 # ======================================================================== #
+# TEST 13: Fresh-project store creates category dir and copies file (BUG)
+# ======================================================================== #
+# Defect: cmd_store requires a pre-existing category dir, but nothing in the
+# bootstrap scaffolds memory/<category>. A brand-new project's first store
+# fails with "category does not exist". After the fix, store should create
+# the category dir and copy the file with rc 0.
+T13_TMP="$(mktemp -d)"
+T13_GIT="$T13_TMP/fresh-repo"
+T13_MEM="$T13_TMP/fresh-memory"
+mkdir -p "$T13_GIT" "$T13_MEM"
+(cd "$T13_GIT" && git init -q)
+echo "# Decision: use TDD" > "$T13_GIT/test-decision.md"
+T13_OUT="$(cd "$T13_GIT" && OPENCODE_MEMORY_DIR="$T13_MEM" bash "$TEAM_ROOT/scripts/memory-lifecycle.sh" store decisions "$T13_GIT/test-decision.md" 2>&1)"
+T13_RC=$?
+if [ "$T13_RC" -eq 0 ] && \
+   echo "$T13_OUT" | grep -q "CREATED" && \
+   [ -d "$T13_MEM/decisions" ]; then
+  ok "T13 fresh-project store creates category dir and copies file"
+else
+  fail "T13 fresh-project store creates category dir and copies file" "rc=$T13_RC output=$T13_OUT"
+fi
+rm -rf "$T13_TMP"
+
+# ======================================================================== #
+# TEST 14: Fresh-project recall on missing category returns rc 0, empty (BUG)
+# ======================================================================== #
+# Defect: cmd_recall exits 1 when the category dir doesn't exist. The intended
+# design (seen in search/sessions/cleanup) is "missing dir = empty". After the
+# fix, recall on a missing category should return rc 0 with "No entries".
+T14_TMP="$(mktemp -d)"
+T14_GIT="$T14_TMP/fresh-repo"
+T14_MEM="$T14_TMP/fresh-memory"
+mkdir -p "$T14_GIT"
+(cd "$T14_GIT" && git init -q)
+T14_OUT="$(cd "$T14_GIT" && OPENCODE_MEMORY_DIR="$T14_MEM" bash "$TEAM_ROOT/scripts/memory-lifecycle.sh" recall decisions 2>&1)"
+T14_RC=$?
+if [ "$T14_RC" -eq 0 ] && \
+   echo "$T14_OUT" | grep -q "No entries in decisions"; then
+  ok "T14 fresh-project recall on missing category returns empty, not error"
+else
+  fail "T14 fresh-project recall on missing category returns empty, not error" "rc=$T14_RC output=$T14_OUT"
+fi
+rm -rf "$T14_TMP"
+
+# ======================================================================== #
+# TEST 15: Fresh-project list on missing category returns rc 0, empty (BUG)
+# ======================================================================== #
+# Defect: list delegates to recall, inheriting the same exit-1-on-missing-dir
+# bug. After the fix, list on a missing category should return rc 0 with
+# "No entries in <category>".
+T15_TMP="$(mktemp -d)"
+T15_GIT="$T15_TMP/fresh-repo"
+T15_MEM="$T15_TMP/fresh-memory"
+mkdir -p "$T15_GIT"
+(cd "$T15_GIT" && git init -q)
+T15_OUT="$(cd "$T15_GIT" && OPENCODE_MEMORY_DIR="$T15_MEM" bash "$TEAM_ROOT/scripts/memory-lifecycle.sh" list decisions 2>&1)"
+T15_RC=$?
+if [ "$T15_RC" -eq 0 ] && \
+   echo "$T15_OUT" | grep -q "No entries in decisions"; then
+  ok "T15 fresh-project list on missing category returns empty, not error"
+else
+  fail "T15 fresh-project list on missing category returns empty, not error" "rc=$T15_RC output=$T15_OUT"
+fi
+rm -rf "$T15_TMP"
+
+# ======================================================================== #
+# TEST 16: Fresh-project sessions returns rc 0 with empty msg (guard)
+# ======================================================================== #
+# sessions already handles missing dirs gracefully (glob + continue). This is
+# a guard test to ensure a future refactor doesn't regress that behavior.
+T16_TMP="$(mktemp -d)"
+T16_GIT="$T16_TMP/fresh-repo"
+T16_MEM="$T16_TMP/fresh-memory"
+mkdir -p "$T16_GIT"
+(cd "$T16_GIT" && git init -q)
+T16_OUT="$(cd "$T16_GIT" && OPENCODE_MEMORY_DIR="$T16_MEM" bash "$TEAM_ROOT/scripts/memory-lifecycle.sh" sessions 2>&1)"
+T16_RC=$?
+if [ "$T16_RC" -eq 0 ] && \
+   echo "$T16_OUT" | grep -q "No active or interrupted sessions"; then
+  ok "T16 fresh-project sessions returns empty list without error"
+else
+  fail "T16 fresh-project sessions returns empty list without error" "rc=$T16_RC output=$T16_OUT"
+fi
+rm -rf "$T16_TMP"
+
+# ======================================================================== #
 # Summary
 # ======================================================================== #
 echo

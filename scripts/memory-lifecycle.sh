@@ -32,8 +32,9 @@ cmd_recall() {
   local dir="$MEMORY_DIR/$category"
 
   if [ ! -d "$dir" ]; then
-    echo "ERROR: memory category '$category' does not exist" >&2
-    exit 1
+    echo "=== Memory recall: $category ==="
+    echo "  No entries in $category"
+    exit 0
   fi
 
   echo "=== Memory recall: $category ==="
@@ -83,8 +84,7 @@ cmd_store() {
   local dir="$MEMORY_DIR/$category"
 
   if [ ! -d "$dir" ]; then
-    echo "ERROR: memory category '$category' does not exist" >&2
-    exit 1
+    mkdir -p "$dir"
   fi
 
   if [ ! -f "$file" ]; then
