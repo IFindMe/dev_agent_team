@@ -190,16 +190,26 @@ else
 fi
 
 # ======================================================================== #
-# TEST T11: runtime tree backup stamps grow on re-run
+# TEST T11: runtime tree backup stamps grow on re-run + managed file restored
 # ======================================================================== #
-NBACKUP_RT="$(find "$RUNTIME/.backup" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)"
-# Runtime re-run over existing content should preserve backup stamps (may be 0
-# on fresh runtime if no files overwritten; after source-identical re-run the
-# managed content is rewritten with a backup stamp).
-if [ "$NBACKUP_RT" -ge 0 ]; then
-  ok "T11 runtime backup stamp mechanism present (no crash on re-run)"
+# Force a runtime backup: pre-seed a differing managed runtime file into the
+# runtime tree, then re-run install. Assert (a) a new .backup/<stamp> dir was
+# created for the runtime tree (count strictly increased) and (b) the seeded
+# file was replaced with the source content (proving it was actually backed up
+# before overwrite rather than merely skipped or crudely clobbered).
+NBACKUP_RT_BEFORE="$(find "$RUNTIME/.backup" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)"
+printf '# CHANGED runtime content\n' > "$RUNTIME/bin/repo-bootstrap.sh"
+env -i HOME="$HOME_T" \
+  OPENCODE_AGENTS_DIR="$AGENTS_T" \
+  OPENCODE_DEV_AGENT_TEAM="$RUNTIME" \
+  bash "$SRC/scripts/install.sh" >/dev/null 2>&1
+NBACKUP_RT_AFTER="$(find "$RUNTIME/.backup" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)"
+if [ "$NBACKUP_RT_AFTER" -gt "$NBACKUP_RT_BEFORE" ] \
+   && cmp -s "$SRC/scripts/repo-bootstrap.sh" "$RUNTIME/bin/repo-bootstrap.sh"; then
+  ok "T11 runtime re-run over seeded differing file adds .backup stamp ($NBACKUP_RT_BEFORE -> $NBACKUP_RT_AFTER) + restores source content"
 else
-  fail "T11 runtime backup stamp mechanism present" "unexpected state"
+  fail "T11 runtime backup stamp mechanism present" \
+    "stamps $NBACKUP_RT_BEFORE -> $NBACKUP_RT_AFTER, source_restored=$([ -f \"$RUNTIME/bin/repo-bootstrap.sh\" ] && cmp -s \"$SRC/scripts/repo-bootstrap.sh\" \"$RUNTIME/bin/repo-bootstrap.sh\" && echo yes || echo no)"
 fi
 
 # ======================================================================== #
