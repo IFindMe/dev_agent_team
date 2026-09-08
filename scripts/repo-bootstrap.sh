@@ -421,22 +421,28 @@ write_meta() { # write_meta <root>
   local root="$1"
   mkdir -p "$root/.opencode"
   current_fingerprint "$root"
-  local new_meta
-  new_meta="$(printf '%s\n' \
+  # Compare only the stable fields (excluding generated_at) so a second run in an
+  # unchanged repo is a true no-op — even across a second boundary — and the
+  # original timestamp is preserved. Without this, idempotency flakes whenever
+  # two runs straddle a second boundary (generated_at would otherwise differ).
+  local stable
+  stable="$(printf '%s\n' \
 "schema=1" \
 "tool=dev_agent_team-repo-bootstrap" \
 "version=$VERSION" \
-"generated_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
 "git_head=$GIT_HEAD" \
 "manifest_fingerprint=$MANIFEST_FP" \
 "top_level_fingerprint=$TOPLEVEL_FP" \
 "signals=$SIGNAL_TXT")"
-  # Idempotent: skip rewrite if content is identical (preserves timestamp).
-  local existing=""
+  local existing="" existing_stable=""
   [ -f "$root/.opencode/$META_FILE" ] && existing="$(cat "$root/.opencode/$META_FILE")"
-  if [ "$existing" = "$new_meta" ]; then
+  [ -n "$existing" ] && existing_stable="$(printf '%s\n' "$existing" | grep -v '^generated_at=' || true)"
+  if [ "$existing_stable" = "$stable" ]; then
     return 0
   fi
+  local new_meta
+  new_meta="$(printf '%s\n' "$stable" \
+"generated_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)")"
   printf '%s\n' "$new_meta" > "$root/.opencode/$META_FILE"
 }
 

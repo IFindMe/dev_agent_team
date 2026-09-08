@@ -56,6 +56,10 @@ SC_OK=0
 # into `grep -q`. grep -q closes the pipe early (SIGPIPE, rc=141), which fails
 # the pipeline under `pipefail`.
 STORE_OK=0
+# Test isolation: remove any residue a previous interrupted/crashed run may have
+# left behind before storing. Writing a fresh entry makes the check independent
+# of the memory directory's pre-existing state.
+rm -f "$MEMORY/lessons/"*integration-test* 2>/dev/null || true
 if bash "$LS" store lessons "$LESSON_FILE" >/dev/null 2>&1; then
   STORE_OK=1
 fi
@@ -80,6 +84,8 @@ fi
 # TEST I02: Session lifecycle — create, list, cleanup
 # ======================================================================== #
 Sess="$MEMORY/sessions/2026-09-08_integration-session-test.md"
+# Test isolation: remove any residue a previous interrupted/crashed run left.
+rm -f "$Sess" 2>/dev/null || true
 printf -- '%s\n' "Status: active" "# Integration session test" "## State" "in progress" > "$Sess"
 SESS_OUT="$(bash "$LS" sessions 2>&1 || true)"
 SESS_OK=0

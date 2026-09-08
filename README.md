@@ -95,9 +95,11 @@ dev_agent_team/
 │   ├── install.sh                     # one-command installer
 │   ├── repo-bootstrap.sh              # repository intelligence bootstrap tool
 │   ├── memory-lifecycle.sh            # memory CRUD operations
+│   ├── test-all.sh                    # single entry point that runs all test suites
 │   ├── test-repo-bootstrap.sh         # test suite for the bootstrap
 │   ├── test-agent-architecture.sh     # structural tests for the agent architecture
 │   ├── test-memory-system.sh          # structural tests for memory/skills/improvements
+│   ├── test-integration.sh            # end-to-end memory/skills/lifecycle integration tests
 │   └── verify-permission-patterns.sh  # permission engine verifier
 └── docs/
     ├── PROMPT_INSTALL.md              # paste-ready prompt for installing from inside opencode
@@ -136,15 +138,25 @@ repo-bootstrap.sh bootstrap
 repo-bootstrap.sh refresh
 ```
 
-Run `bash scripts/test-repo-bootstrap.sh` to verify bootstrap behavior
-(11 tests covering all 10 acceptance criteria).
+Run all test suites with a single command (aggregates the four suites below):
 
-Run `bash scripts/test-agent-architecture.sh` to verify the agent architecture
-contains the required adaptive/evidence-driven elements
-(16 structural tests).
+```bash
+bash scripts/test-all.sh
+```
 
-Run `bash scripts/test-memory-system.sh` to verify the memory, skills, and
-improvement systems are structurally sound (12 tests).
+51 individual checks across 4 suites (16 architecture + 12 memory + 11 bootstrap
++ 12 integration). Any suite failing makes the overall exit code non-zero.
+
+Individual suites:
+
+- `test-agent-architecture.sh` — architecture contains the required
+  adaptive/evidence-driven elements (16 structural tests).
+- `test-memory-system.sh` — memory, skills, and improvement systems are
+  structurally sound (12 tests).
+- `test-repo-bootstrap.sh` — bootstrap behavior and idempotency
+  (11 tests covering all 10 acceptance criteria).
+- `test-integration.sh` — end-to-end memory/skills/improvements integration
+  (12 tests).
 
 ## Manual install alternative
 
