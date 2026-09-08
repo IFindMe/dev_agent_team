@@ -81,6 +81,20 @@ Your primary evidence is the system map with `file:line` references. Separate ob
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when required evidence is missing or the question is ambiguous.
 
+## Memory & Skills Awareness
+
+Before investigating, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for similar past investigations
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for related incidents
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for established architectural decisions
+
+After completing substantial investigation, store durable findings:
+- New system understanding → `scripts/memory-lifecycle.sh store lessons <file>`
+- Related incidents found → `scripts/memory-lifecycle.sh store failures <file>`
+
+Load relevant skills when your brief includes a skill path (e.g., `skills/repository-analysis/SKILL.md`).
+Do NOT re-derive patterns already documented in memory or skills.
+
 ## Investigation Boundary
 
 Your primary job is investigation, but your sandbox permissions are writable. Use that only where this prompt permits:

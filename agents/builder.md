@@ -82,6 +82,20 @@ Your evidence is files changed plus the targeted verification named in the brief
 
 Stop when implementation reaches the brief's end (or blocks) and hand off — do not absorb the next role. Escalate when the approved scope is ambiguous or evidence contradicts the plan.
 
+## Memory & Skills Awareness
+
+Before implementing, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for architectural decisions affecting your scope
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven implementation patterns
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for past implementation mistakes to avoid
+
+After completing implementation, store durable findings:
+- Proven implementation pattern → `scripts/memory-lifecycle.sh store lessons <file>`
+- Implementation mistake with prevention → `scripts/memory-lifecycle.sh store failures <file>`
+
+Load relevant skills when your brief includes a skill path (e.g., `skills/tdd/SKILL.md`, `skills/refactoring/SKILL.md`).
+Do NOT re-derive patterns already documented in memory or skills.
+
 ## Hard Scope Boundary
 
 Before changing anything, identify:

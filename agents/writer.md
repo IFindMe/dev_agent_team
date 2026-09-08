@@ -82,6 +82,20 @@ Your primary evidence is the source material: the reports and files consulted, w
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when the evidence needed for accuracy is missing.
 
+## Memory & Skills Awareness
+
+Before writing, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for architectural decisions to document
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven documentation patterns
+- `scripts/memory-lifecycle.sh recall architecture <keywords>` — for system structure to describe
+
+After completing documentation, store durable findings:
+- Architecture documented → `scripts/memory-lifecycle.sh store architecture <file>`
+- Documentation lesson learned → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path.
+Do NOT re-derive documentation patterns already documented in skills.
+
 ## Core Philosophy
 
 Mirror disciplined technical writing:

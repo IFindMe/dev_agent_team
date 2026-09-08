@@ -33,16 +33,30 @@ for the full architecture.
 
 ### Adaptive, Evidence-Driven Orchestration
 
-The team is architected as a **decision engine**: the Orchestrator understands
-the task, estimates complexity, loads repository intelligence, chooses the next
-best action from an explicit action catalog, verifies outcomes independently,
-re-plans when evidence changes, and stops when sufficiently verified. Every
-agent produces structured evidence-state records and knows when to stop and
-escalate.
+The team is architected as a **decision engine**: the Orchestrator recalls
+project memory, understands the task, estimates complexity, loads repository
+intelligence, chooses the next best action from an explicit action catalog,
+verifies outcomes independently, re-plans when evidence changes, stores durable
+findings, and stops when sufficiently verified. Every agent produces structured
+evidence-state records and knows when to stop and escalate.
 
 See [docs/AGENT_ARCHITECTURE.md](docs/AGENT_ARCHITECTURE.md) for the full
 architecture, and [docs/EVALUATION_SCENARIOS.md](docs/EVALUATION_SCENARIOS.md)
 for the 12 runtime evaluation scenarios used to measure the team's own quality.
+
+### Project Memory & Skills
+
+The team includes **cross-session project memory** (`memory/`) for persisting
+decisions, lessons, failures, architecture notes, and session state. A
+lifecycle script (`scripts/memory-lifecycle.sh`) provides deterministic recall,
+store, list, search, and cleanup operations.
+
+The team also includes **12 reusable skills** (`skills/`) — specialized
+methodologies for TDD, debugging, architecture, code review, security review,
+and more. Agents load relevant skills when dispatched.
+
+Both systems require **human approval** for changes to core agent behavior
+(`improvements/`).
 
 ## Repository layout
 
@@ -51,11 +65,39 @@ dev_agent_team/
 ├── README.md                          # this file
 ├── .gitignore
 ├── agents/                            # the 13 agent definitions (*.md)
+├── memory/                            # cross-session project memory
+│   ├── MEMORY.md                      # index with lifecycle rules
+│   ├── decisions/                     # architectural/technical choices
+│   ├── lessons/                       # reusable knowledge
+│   ├── failures/                      # root causes + prevention
+│   ├── architecture/                  # system structure documentation
+│   └── sessions/                      # work-in-progress state
+├── skills/                            # 12 reusable specialized methodologies
+│   ├── SKILLS.md                      # index with loading rules
+│   ├── tdd/SKILL.md                   # Test-Driven Development
+│   ├── systematic-debugging/SKILL.md  # debugging methodology
+│   ├── architecture-design/SKILL.md   # architecture decisions
+│   ├── code-review/SKILL.md           # code review process
+│   ├── security-review/SKILL.md       # security review
+│   ├── repository-analysis/SKILL.md   # repo exploration
+│   ├── failure-analysis/SKILL.md      # failure investigation
+│   ├── refactoring/SKILL.md           # safe code restructuring
+│   ├── test-analysis/SKILL.md         # test quality assessment
+│   ├── incident-investigation/SKILL.md # production incidents
+│   ├── browser-automation/SKILL.md    # web interaction patterns
+│   └── research/SKILL.md              # information gathering
+├── improvements/                      # proposal-based improvement system
+│   ├── README.md                      # proposal format and lifecycle
+│   ├── pending/                       # proposals awaiting approval
+│   ├── applied/                       # approved and implemented
+│   └── rejected/                      # not approved
 ├── scripts/
 │   ├── install.sh                     # one-command installer
 │   ├── repo-bootstrap.sh              # repository intelligence bootstrap tool
+│   ├── memory-lifecycle.sh            # memory CRUD operations
 │   ├── test-repo-bootstrap.sh         # test suite for the bootstrap
 │   ├── test-agent-architecture.sh     # structural tests for the agent architecture
+│   ├── test-memory-system.sh          # structural tests for memory/skills/improvements
 │   └── verify-permission-patterns.sh  # permission engine verifier
 └── docs/
     ├── PROMPT_INSTALL.md              # paste-ready prompt for installing from inside opencode
@@ -100,6 +142,9 @@ Run `bash scripts/test-repo-bootstrap.sh` to verify bootstrap behavior
 Run `bash scripts/test-agent-architecture.sh` to verify the agent architecture
 contains the required adaptive/evidence-driven elements
 (16 structural tests).
+
+Run `bash scripts/test-memory-system.sh` to verify the memory, skills, and
+improvement systems are structurally sound (12 tests).
 
 ## Manual install alternative
 

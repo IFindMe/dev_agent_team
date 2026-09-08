@@ -86,6 +86,20 @@ Your primary evidence distinguishes facts from guesses: each hypothesis must nam
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when required evidence is missing or the symptom is out of scope.
 
+## Memory & Skills Awareness
+
+Before investigating, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for related past incidents
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven debugging approaches
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for established architectural decisions
+
+After completing investigation, store durable findings:
+- Root cause with prevention → `scripts/memory-lifecycle.sh store failures <file>`
+- Proven debugging technique → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path (e.g., `skills/systematic-debugging/SKILL.md`, `skills/failure-analysis/SKILL.md`).
+Do NOT re-investigate what memory already documents.
+
 ## Investigation Boundary
 
 Your job is diagnosis, and your sandbox permissions are writable. Use that only where this prompt permits:

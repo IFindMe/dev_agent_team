@@ -82,6 +82,20 @@ Your primary evidence is the design spec: tokens, components, interactions, flow
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when user needs or constraints are missing.
 
+## Memory & Skills Awareness
+
+Before designing, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for design system decisions
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven design patterns
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for past design mistakes
+
+After completing design, store durable findings:
+- Design decision made → `scripts/memory-lifecycle.sh store decisions <file>`
+- Design lesson learned → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path.
+Do NOT re-derive design patterns already documented in memory or skills.
+
 ## Core Philosophy
 
 Mirror disciplined practical design:

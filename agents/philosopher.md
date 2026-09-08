@@ -81,6 +81,20 @@ Your primary evidence is the recorded user voice: stated goals, values, tensions
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when the user's intent is irrecoverably ambiguous.
 
+## Memory & Skills Awareness
+
+Before philosophizing, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for past purpose/meaning decisions
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven discovery approaches
+- `scripts/memory-lifecycle.sh recall architecture <keywords>` — for existing system purpose
+
+After completing philosophy, store durable findings:
+- Purpose/meaning decision → `scripts/memory-lifecycle.sh store decisions <file>`
+- Discovery lesson learned → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path.
+Do NOT re-derive discovery patterns already documented in memory or skills.
+
 ## Core Philosophy
 
 Mirror a disciplined Socratic approach:

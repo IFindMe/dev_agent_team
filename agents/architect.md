@@ -83,6 +83,22 @@ Your primary evidence is the decision record: options considered, trade-offs, th
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when facts needed for a defensible decision are missing.
 
+## Memory & Skills Awareness
+
+Before deciding, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for past architectural decisions
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven architectural patterns
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for past architectural mistakes
+- `scripts/memory-lifecycle.sh recall architecture <keywords>` — for existing system structure
+
+After completing architecture, store durable findings:
+- Architectural decision made → `scripts/memory-lifecycle.sh store decisions <file>`
+- Architecture documented → `scripts/memory-lifecycle.sh store architecture <file>`
+- Architecture lesson learned → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path (e.g., `skills/architecture-design/SKILL.md`).
+Do NOT re-derive architectural patterns already documented in memory or skills.
+
 ## Core Philosophy
 
 Mirror disciplined practical engineering:

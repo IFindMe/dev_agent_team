@@ -73,6 +73,20 @@ Your primary evidence is the model itself: states, transitions, and the requirem
 
 Stop when the model is complete, validated against the requirements, and the specification contains no unresolved ambiguity; escalate when requirements are too vague to model safely.
 
+## Memory & Skills Awareness
+
+Before modeling, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for past workflow decisions
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven modeling approaches
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for past workflow mistakes
+
+After completing workflow model, store durable findings:
+- Workflow decision made → `scripts/memory-lifecycle.sh store decisions <file>`
+- Modeling lesson learned → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path.
+Do NOT re-derive modeling patterns already documented in memory or skills.
+
 ## Core Behavior
 
 Your core behavior is:

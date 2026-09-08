@@ -83,6 +83,20 @@ Your evidence is verification: tests run, pass/fail totals, reproduction command
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when the verification matrix lacks the facts needed to test the behavior.
 
+## Memory & Skills Awareness
+
+Before testing, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for past test gaps or regressions
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven testing approaches
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for testing standards
+
+After completing testing, store durable findings:
+- Test gap with prevention → `scripts/memory-lifecycle.sh store failures <file>`
+- Proven testing technique → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path (e.g., `skills/tdd/SKILL.md`, `skills/test-analysis/SKILL.md`).
+Do NOT re-derive test strategies already documented in skills.
+
 ## Core Philosophy
 
 Mirror disciplined practical testing:

@@ -17,9 +17,9 @@ architecture documented in
 
 | Area | Before | After |
 |------|--------|-------|
-| Orchestrator behavior | linear `REQUEST → … → REPORT` flow | adaptive `UNDERSTAND → ESTIMATE → LOAD CONTEXT → CHOOSE ACTION → EXECUTE → VERIFY → RE-PLAN/STOP → LEARN` decision loop |
+| Orchestrator behavior | linear `REQUEST → … → REPORT` flow | adaptive `RECALL → UNDERSTAND → ESTIMATE → LOAD CONTEXT → CHOOSE ACTION → EXECUTE → VERIFY → RE-PLAN/STOP → LEARN → STORE` decision loop |
 | Task sizing | implicit | explicit lightweight complexity estimation (`ESTIMATE → EXECUTE → EXPAND`) |
-| Action selection | implicit routing by task type | explicit **Action Catalog** (24 actions with purpose/cost/risk/prereq/failure modes); direct tool calls preferred over agent dispatch when cheaper |
+| Action selection | implicit routing by task type | explicit **Action Catalog** (27 actions with purpose/cost/risk/prereq/failure modes); direct tool calls preferred over agent dispatch when cheaper |
 | Handoffs | prose contract | structured **evidence-state record** (9 fields) for meaningful decisions/investigations/failures/handoffs |
 | Planning | replan on handoff | **adaptive planning** with failure classification (7 types) and no blind retries |
 | Verification | verification gate | verification gate + **process quality** detection (lucky-pass, symptom-fixing, etc.) and lightweight **quality gates** |
@@ -28,6 +28,9 @@ architecture documented in
 | Subagents | role boundaries + handoff formats | role-adapted **Evidence & Handoffs** sections; each agent knows its evidence product, knowledge ownership, stop, and escalation points |
 | Repository knowledge | bootstrap + skills | unchanged structure + **knowledge lifecycle** rules (discover → classify → identify owner → update only the relevant doc → preserve valid content) |
 | Agent roster | 13 agents | **still exactly 13 agents** (1 orchestrator primary + 12 subagents); no new roles, no removed roles |
+| Project memory | — | **deterministic cross-session memory** in `memory/` (decisions, lessons, failures, architecture, sessions) with lifecycle script |
+| Skills | — | **12 reusable specialized methodologies** in `skills/` loaded by agents when needed |
+| Improvements | — | **proposal-based improvement system** in `improvements/` requiring human approval |
 
 ## 2. Orchestrator decision loop
 
@@ -121,6 +124,7 @@ conversational claims; it never accepts "it works" as "evidence shows it works".
 
 ```text
 repository knowledge  → .opencode/ skills + AGENTS.md (durable, role-owned)
+project memory        → memory/ decisions, lessons, failures, architecture, sessions (cross-session)
 task state            → AgentsReport/<agent>/ reports (current task only)
 agent handoff state   → the state records passed between agents
 scratch               → /tmp/opencode or in-memory (throwaway)
@@ -213,7 +217,83 @@ conventions, Orchestrator for AGENTS.md) → update only that document → prese
 valid existing information → never record temporary task details. Stale content
 is detected by bootstrap fingerprints and corrected by the owning agent.
 
-## 12. Agent ownership of knowledge and evidence
+## 12. Project memory (cross-session persistence)
+
+Project memory provides deterministic, inspectable, version-controlled
+persistence across sessions. It lives in `memory/` at the repository root:
+
+```text
+memory/
+├── MEMORY.md           # index with lifecycle rules
+├── decisions/          # architectural/technical choices (evidence-backed)
+├── lessons/            # reusable knowledge (proven patterns)
+├── failures/           # root causes + prevention (incident records)
+├── architecture/       # system structure documentation
+└── sessions/           # work-in-progress state (session continuity)
+```
+
+**Lifecycle script**: `scripts/memory-lifecycle.sh` provides deterministic
+operations: `recall`, `store`, `list`, `search`, `sessions`, `cleanup`.
+
+**Integration**: The Orchestrator recalls relevant memory before task
+classification and stores durable findings after substantial work. All 12
+subagents check memory before investigating/implementing and store lessons
+after completing their work.
+
+**Rules**: Store selectively (not every tool call); entries must be
+evidence-backed; preserve existing memory; never store task-specific noise as
+durable knowledge.
+
+## 13. Skills system (reusable methodologies)
+
+Skills are reusable, specialized capabilities that agents load when needed.
+They live in `skills/` at the repository root:
+
+```text
+skills/
+├── tdd/SKILL.md                    # Test-Driven Development
+├── systematic-debugging/SKILL.md   # debugging methodology
+├── architecture-design/SKILL.md    # architecture decisions
+├── code-review/SKILL.md            # code review process
+├── security-review/SKILL.md        # security review
+├── repository-analysis/SKILL.md    # repo exploration
+├── failure-analysis/SKILL.md       # failure investigation
+├── refactoring/SKILL.md            # safe code restructuring
+├── test-analysis/SKILL.md          # test quality assessment
+├── incident-investigation/SKILL.md # production incidents
+├── browser-automation/SKILL.md     # web interaction patterns
+└── research/SKILL.md               # information gathering
+```
+
+**Loading**: When the Orchestrator dispatches a specialist, the brief includes
+the relevant skill path. The agent reads the skill before starting work.
+
+**Ownership**: Skills are owned by their primary agent (e.g., `tdd` by Builder,
+`systematic-debugging` by Detective). The Orchestrator is the index owner.
+
+**Extension**: To add a skill, create `skills/<name>/SKILL.md` with frontmatter
+(name, description, version, owner) and sections (When to use, Core
+methodology, Step-by-step procedure). Update `skills/SKILLS.md` index.
+
+## 14. Improvement proposals
+
+The improvement proposal system provides a structured way to evolve agent
+behavior, skills, and processes. Proposals live in `improvements/`:
+
+```text
+improvements/
+├── README.md     # proposal format and lifecycle
+├── pending/      # proposals awaiting human approval
+├── applied/      # approved and implemented proposals
+└── rejected/     # proposals that were not approved
+```
+
+**Rules**: Do NOT modify core agent behavior without human approval. Create
+proposals in `improvements/pending/`. Present proposals at natural stopping
+points. Include: observed problem, evidence, root cause, proposed change,
+risks, verification plan.
+
+## 15. Agent ownership of knowledge and evidence
 
 | Agent | Knowledge owned | Primary evidence product | Stop when |
 |-------|-----------------|--------------------------|-----------|
@@ -234,7 +314,7 @@ Every agent additionally has a role-adapted **Evidence & Handoffs** section with
 the 9-field state record, explicit evidence product, stop condition, and
 escalation point.
 
-## 13. Parallelism
+## 16. Parallelism
 
 Parallel only when genuinely independent (no unresolved dependency, no shared
 state conflicts, independently interpretable results), and only after
@@ -242,7 +322,7 @@ considering coordination cost. Good: three independent Explorer investigations
 (architecture, tests, dependencies). Bad: three agents investigating the same
 files or proposing identical fixes.
 
-## 14. Evaluation
+## 17. Evaluation
 
 Structural readiness is verified by `scripts/test-agent-architecture.sh`
 (currently 16 checks). Runtime behavior is evaluated through the 12 scenarios in
@@ -250,7 +330,7 @@ Structural readiness is verified by `scripts/test-agent-architecture.sh`
 unnecessary work, repeated actions, verification quality, correct agent
 selection, cost/context growth, and recovery quality — not just pass/fail.
 
-## 15. Example execution trace — simple task
+## 18. Example execution trace — simple task
 
 ```text
 User: "Fix the typo in README.md line 12."
@@ -264,7 +344,7 @@ User: "Fix the typo in README.md line 12."
   Agents dispatched: 0.  Cost: ~4 tool calls.
 ```
 
-## 16. Example execution trace — complex task
+## 19. Example execution trace — complex task
 
 ```text
 User: "Add a build cache to the pipeline and verify it improves CI time."
@@ -283,7 +363,7 @@ User: "Add a build cache to the pipeline and verify it improves CI time."
   Cost: higher, but each dispatch produced decision value.
 ```
 
-## 17. Remaining weaknesses
+## 20. Remaining weaknesses
 
 - The action catalog and cost model are textual guidance, not enforced tooling;
   faithful use depends on the orchestrator model following instructions.
@@ -296,3 +376,9 @@ User: "Add a build cache to the pipeline and verify it improves CI time."
   enforced by reviewer attention, not mechanically.
 - Knowledge ownership depends on role discipline; an agent that enriches the
   wrong skill would only be caught by review.
+- Project memory is selective — not every finding is stored; agents must
+  exercise judgment about what constitutes durable knowledge.
+- Memory retrieval is keyword-based, not semantic; relevant entries may be missed
+  if keywords don't match.
+- Improvement proposals require human approval, which may slow rapid iteration
+  on agent behavior.

@@ -63,7 +63,7 @@ fi
 if assert_contains "$ORCH" "## Action Catalog (choose the next best action)" \
    && assert_contains "$ORCH" "| # | Action | Purpose | Inputs | Outputs | Read-only | Cost | Risk | Prereq | Failure modes |" \
    && assert_contains "$ORCH" "A1 | inspect repository" \
-   && assert_contains "$ORCH" "A24 | re-plan"; then
+   && grep -qE "A[0-9]+ . re-plan" "$ORCH"; then
   ok "T03 action catalog with tool cards present"
 else
   fail "T03 action catalog with tool cards present" "catalog/table markers missing"

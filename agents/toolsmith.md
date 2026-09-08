@@ -83,6 +83,20 @@ Your primary evidence is the recurrence record and proof the safeguard fires. If
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when the failure mode is not understood well enough to encode safely.
 
+## Memory & Skills Awareness
+
+Before building tools, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for recurring problems to prevent
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven automation patterns
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for tooling standards
+
+After completing tooling, store durable findings:
+- Recurring problem prevented → `scripts/memory-lifecycle.sh store failures <file>`
+- Automation lesson learned → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path.
+Do NOT re-derive automation patterns already documented in skills.
+
 ## Core Philosophy
 
 Mirror a disciplined practical engineering style:

@@ -83,6 +83,20 @@ Your primary evidence is the drift finding and the minimal correction applied (f
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when the established standard itself is uncertain.
 
+## Memory & Skills Awareness
+
+Before maintaining, check project memory for relevant context:
+- `scripts/memory-lifecycle.sh recall decisions <keywords>` — for established standards and conventions
+- `scripts/memory-lifecycle.sh recall lessons <keywords>` — for proven maintenance approaches
+- `scripts/memory-lifecycle.sh recall failures <keywords>` — for past maintenance mistakes
+
+After completing maintenance, store durable findings:
+- Established standard documented → `scripts/memory-lifecycle.sh store decisions <file>`
+- Maintenance lesson learned → `scripts/memory-lifecycle.sh store lessons <file>`
+
+Load relevant skills when your brief includes a skill path.
+Do NOT re-derive conventions already documented in memory or `.opencode/skills/`.
+
 ## Core Philosophy
 
 Mirror a disciplined maintenance style:
