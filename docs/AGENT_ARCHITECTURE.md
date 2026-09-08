@@ -293,6 +293,42 @@ proposals in `improvements/pending/`. Present proposals at natural stopping
 points. Include: observed problem, evidence, root cause, proposed change,
 risks, verification plan.
 
+**Detection triggers** (evidence-driven, not per-task): a proposal is warranted
+when a failure recurs, a needed skill is missing, routing was inefficient, a
+documentation gap forced re-derivation, a multi-step process would recur, or a
+genuinely reusable pattern emerged. Proposals are decisions, not actions —
+writing one does not implement it; human approval is required for changes that
+touch core agent behavior, agent prompts, the orchestrator's decision logic,
+or the agent roster.
+
+### Task lifecycle (full loop)
+
+A coherent task runs through these stages; trivial tasks collapse them, complex
+tasks engage every stage with evidence feeding the next:
+
+```text
+1. RECALL      — search memory (sessions, decisions, lessons, failures)
+2. UNDERSTAND  — separate goal from investigation/implementation/architecture
+3. ESTIMATE    — lightweight complexity (scope, files, impact, uncertainty, risk)
+4. LOAD        — read .opencode/ repo intelligence (refresh if stale); read skills
+5. PLAN        — decompose into work items; pick agents; set dependencies
+6. DISPATCH    — brief each agent (objective, scope, patterns, skill paths, report)
+7. VERIFY      — check artifacts on disk; confirm evidence; re-plan on mismatch
+8. LEARN       — classify outcomes: decision / lesson / failure / session
+9. STORE       — persist durable findings to memory/ via memory-lifecycle.sh
+10. IMPROVE    — detect improvement proposals; write to improvements/pending/
+11. REPORT     — final report mapping result to original objective
+```
+
+Memory touch is selective: trivial/ephemeral work is not stored; one-off but
+meaningful work stores a lesson/decision if durable; recurring patterns store a
+failure record AND consider a proposal; architectural work stores a decision;
+long-horizon work maintains a session record.
+
+Agent selection is not a fixed pipeline: memory is recalled first, relevant
+skills are loaded into dispatch briefs, and **skip-when** guards avoid
+dispatching agents whose reasoning is not required for the next decision.
+
 ## 15. Agent ownership of knowledge and evidence
 
 | Agent | Knowledge owned | Primary evidence product | Stop when |

@@ -620,6 +620,26 @@ complex feature
 
 Use the smallest coherent chain that solves the problem. Do not shape a task to fit a chain; shape the chain to fit the task.
 
+### Selection with memory and skills
+
+When selecting agents, first recall memory and identify required skills:
+
+1. **Recall memory** (A23) for the task keywords — decisions, lessons, failures, sessions. Does the memory indicate a specific agent, approach, or prior outcome?
+2. **Identify skills** — from the Agent-Skill Mapping table, which skills does the chosen agent need? Include the skill path in the dispatch brief.
+3. **Update plan from memory** — if memory shows a prior decision prohibits an approach, route differently. If a prior failure explains a symptom, route to Detective first.
+4. **Store outcomes after** — when the chain completes, store any durable learning (A24).
+
+### Skip-when (efficiency guards)
+
+- Skip Explorer when the system is already understood and documented.
+- Skip Detective when the failure's cause is already established by evidence.
+- Skip Architect when no new architectural decision is required.
+- Skip Philosopher when purpose is already clear.
+- Skip Writer when the deliverable is not documentation.
+- Skip Monitor/audit agents when nothing needs independent verification.
+
+Dispatch an agent ONLY when its reasoning/evidence/implementation is actually required for the next decision — not because the agent is available or because a template chain says so.
+
 ## Decomposition
 
 When a request contains multiple independent objectives, split them into explicit work items.
@@ -634,9 +654,13 @@ Depends on:
 Scope:
 Required output:
 Verification:
+Memory recall:      <keywords to check in memory before work>
+Skills to load:     <skill path(s) if any>
 ```
 
 A work item must be small enough that its assigned specialist can finish without silently becoming another role.
+
+When decomposing, check whether any work item is a candidate for a **memory store** after completion (a decision, lesson, or failure record). Identify this up front so the integration is not an afterthought.
 
 ## Parallelism Rule
 
@@ -742,6 +766,38 @@ Possible outcomes:
 - **Blocked** — responsible progress is impossible with current evidence/authorization
 
 Never override a specialist's explicit boundary merely to keep the workflow moving.
+
+## Task Lifecycle (full loop with memory, skills, improvements)
+
+A coherent task runs through these stages. Not every stage fires for trivial tasks;
+the loop contracts for simple work and expands for complex work.
+
+```text
+1. RECALL      — search memory (sessions, decisions, lessons, failures) for context
+2. UNDERSTAND  — separate goal from investigation/implementation/architecture
+3. ESTIMATE    — lightweight complexity: scope, files, impact, uncertainty, risk
+4. LOAD        — read .opencode/ repo intelligence (refresh if stale); read skills
+5. PLAN        — decompose into work items; choose agents; set dependencies
+6. DISPATCH    — brief each agent (objective, scope, patterns, skill paths, report path)
+7. VERIFY      — check artifacts on disk; confirm evidence; re-plan on mismatch
+8. LEARN       — classify outcomes: decision / lesson / failure / session
+9. STORE       — persist durable findings to memory/ via memory-lifecycle.sh
+10. IMPROVE    — detect improvement proposals; write to improvements/pending/
+11. REPORT     — final report mapping result to original objective
+```
+
+For a **trivial** task, stages 1, 4, 5, 8-10 collapse: direct act, verify, report.
+For a **complex** task, every stage engages and evidence from one stage feeds the next.
+
+### Stage gate: should this task touch memory?
+
+```text
+Trivial / ephemeral        → do NOT store memory (avoid noise)
+One-off but meaningful      → store a lesson or decision if durable
+Recurring pattern           → store a failure record AND consider an improvement proposal
+Architectural / structural  → store a decision record; update architecture memory
+Cross-session / long-horizon → maintain a session record so work resumes cleanly
+```
 
 ## Scope Boundary
 
@@ -950,32 +1006,77 @@ agent behavior without human approval.**
 
 ## Improvement Proposals
 
-At the end of substantial work, detect potential improvements:
+At the end of substantial work, detect potential improvements. The detection is
+evidence-driven and triggered by patterns, not by every task:
+
+### When a proposal is warranted
+
+Write a proposal to `improvements/pending/` when ANY of these fire:
+
+1. **Recurring failure** — you just stored a `failures/` record and it resembles a
+   prior failure record. A failure that repeats is a system problem, not a task
+   outcome. This is a strong signal to propose a Toolsmith safeguard or a
+   regression test.
+2. **Missing skill** — a specialist had to improvise a methodology that no
+   existing skill covers. Propose adding a skill.
+3. **Routing inefficiency** — an agent was dispatched and the task would have been
+   cheaper as a direct tool call (or a different agent). Propose a routing rule
+   change.
+4. **Documentation gap** — several agents independently re-derived the same
+   convention that should have been documented. Propose a docs/knowledge fix.
+5. **Process friction** — the same multi-step manual sequence recurred in this
+   task and would recur again. Propose automation.
+6. **New proven pattern** — a specialist discovered a genuinely reusable pattern.
+   Propose capturing it as a skill or lesson.
+
+### Detection flow
 
 ```text
 REVIEW: "What happened?"
 LEARN: "What was learned?"
-ANALYZE: "Is this a one-time event or recurring problem?"
-PROPOSE: "What should change?"
-STORE: "Where should the learning live?"
-APPROVAL: "Does this require human approval?"
+CHECK MEMORY: "Have I seen this before?"   → recall failures/lessons for the class
+ANALYZE: "Is this one-time or recurring?"
+PROPOSE: "What should change to prevent the class?"
+STORE: "Lesson/failure stored in memory?"
+APPROVAL: "Does the change touch core behavior?"  → if yes, proposal not edit
 ```
 
-Valid proposals include:
-- Add a new skill (missing capability)
-- Improve an existing skill (proven pattern)
-- Improve agent routing (delegation inefficiency)
-- Add regression tests (recurring bugs)
-- Improve documentation (knowledge gaps)
-- Change an inefficient workflow (process improvement)
-- Add a missing guardrail (repeated mistakes)
+### Proposal format
+
+```text
+improvements/pending/YYYY-MM-DD_<short-id>.md
+
+# Proposal: <title>
+## Observed problem
+   <what went wrong or what is inefficient>
+## Evidence
+   <files, commands, outputs, memory records that prove it>
+## Root cause
+   <why it happens — established, not guessed>
+## Proposed change
+   <what should change: add skill / improve routing / add guardrail / etc.>
+## Scope
+   <what is touched, what is explicitly out of scope>
+## Risks
+   <what could go wrong with the change>
+## Verification plan
+   <how the change will be validated if approved>
+## Approval status
+   PENDING (awaiting human review)
+```
 
 **Rules:**
-- Do NOT silently rewrite agent prompts or architecture
-- Do NOT modify core behavior without human approval
-- Create proposals in `improvements/pending/YYYY-MM-DD_<id>.md`
-- Present proposals to user at natural stopping points
-- Include: observed problem, evidence, root cause, proposed change, risks, verification plan
+- Do NOT silently rewrite agent prompts, skills, or architecture.
+- Do NOT modify core behavior without human approval — proposals live in
+  `improvements/pending/` until a human reviews them.
+- Present proposals to the user at natural stopping points (end of a task, before
+  committing, at a review gate) — do not bury them.
+- Proposals are decisions, not actions: writing one does not implement it.
+- If the same proposal class recurs across multiple tasks, surface it as a
+  coordination blocker rather than re-proposing silently.
+- Improvements that touch memory storage or skills are also proposals; the act of
+  *using* memory/skills is allowed, but changing the systems themselves needs
+  approval.
 
 ## Final Report
 
