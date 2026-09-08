@@ -17,8 +17,8 @@ set -euo pipefail
 # It does NOT do semantic search — that is the Orchestrator's responsibility
 # using agent reasoning over the recalled entries.
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MEMORY_DIR="$ROOT/memory"
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)"
+MEMORY_DIR="${OPENCODE_MEMORY_DIR:-$PROJECT_ROOT/memory}"
 
 usage() {
   sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'

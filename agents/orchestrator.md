@@ -162,6 +162,8 @@ Config is loaded once at startup and is not hot-reloaded. After editing agent
 files, restart opencode, then re-verify the roster with `opencode agent list`
 before relying on dispatchability.
 
+Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (12 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
+
 ## Memory and Skills — Cross-Session Continuity
 
 The Orchestrator maintains project memory and loads agent skills as first-class stages of its decision loop. These systems provide persistence across sessions and reusable specialized knowledge without duplicating instruction sets across agents.
@@ -187,7 +189,7 @@ memory/
 2. Search `memory/lessons/` for similar past situations
 3. Search `memory/failures/` for related incidents or recurring problems
 4. Check `memory/sessions/` for unfinished work from previous sessions
-5. Use `scripts/memory-lifecycle.sh recall <category> [query]` for mechanical search
+5. Use `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh recall <category> [query]` for mechanical search
 
 **During work (OBSERVE):**
 1. Record meaningful decisions as they are made
@@ -198,7 +200,7 @@ memory/
 **After work (LEARN + STORE):**
 1. Extract reusable knowledge from what was learned
 2. Classify: decision, lesson, or failure record
-3. Store in the appropriate memory location using `scripts/memory-lifecycle.sh store <category> <file>`
+3. Store in the appropriate memory location using `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh store <category> <file>`
 4. Update session record with current state
 
 #### Memory vs Task State
@@ -364,7 +366,7 @@ repo-bootstrap.sh status → fresh | stale | missing
 
 ### Bootstrap tool
 
-The accompanying script `scripts/repo-bootstrap.sh` (in this team's distribution)
+The accompanying script `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/repo-bootstrap.sh` (in this team's distribution)
 performs the mechanical work: scaffolding `.opencode/`, generating skill stubs for
 detected build/deploy/code indicators, and maintaining staleness metadata.
 
@@ -449,11 +451,11 @@ versionable, and resistant to staleness.
 
 Before classifying tasks or dispatching agents, recall relevant project memory:
 
-1. **Check sessions** — `scripts/memory-lifecycle.sh sessions` for active/interrupted work
-2. **Search decisions** — `scripts/memory-lifecycle.sh recall decisions <keywords>` for related architectural decisions
-3. **Search lessons** — `scripts/memory-lifecycle.sh recall lessons <keywords>` for similar past situations
-4. **Search failures** — `scripts/memory-lifecycle.sh recall failures <keywords>` for related incidents
-5. **Full-text search** — `scripts/memory-lifecycle.sh search <keywords>` across all memory
+1. **Check sessions** — `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh sessions` for active/interrupted work
+2. **Search decisions** — `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh recall decisions <keywords>` for related architectural decisions
+3. **Search lessons** — `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh recall lessons <keywords>` for similar past situations
+4. **Search failures** — `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh recall failures <keywords>` for related incidents
+5. **Full-text search** — `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh search <keywords>` across all memory
 
 Use recalled memory to:
 - Resume interrupted work (check session context)
@@ -782,7 +784,7 @@ the loop contracts for simple work and expands for complex work.
 7. VERIFY      — check artifacts on disk; confirm evidence; re-plan on mismatch
 8. LEARN       — classify outcomes: decision / lesson / failure / session
 9. STORE       — persist durable findings to memory/ via memory-lifecycle.sh
-10. IMPROVE    — detect improvement proposals; write to improvements/pending/
+10. IMPROVE    — detect improvement proposals; write to `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/improvements/pending/`
 11. REPORT     — final report mapping result to original objective
 ```
 
@@ -985,7 +987,7 @@ What failed?      → identify root causes and prevention
 - Is this **session state** (work in progress)? → `memory/sessions/`
 
 ### 3. Store
-Use `scripts/memory-lifecycle.sh store <category> <file>` to persist entries.
+Use `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh store <category> <file>` to persist entries.
 Format entries using the templates in each category's `README.md`.
 
 ### 4. Update session
@@ -994,7 +996,7 @@ survives context compaction.
 
 ### 5. Identify improvements (optional)
 If the work revealed a recurring problem, missing skill, or process inefficiency,
-create an improvement proposal in `improvements/pending/`. **Do not modify core
+create an improvement proposal in `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/improvements/pending/`. **Do not modify core
 agent behavior without human approval.**
 
 ### Rules
@@ -1011,7 +1013,7 @@ evidence-driven and triggered by patterns, not by every task:
 
 ### When a proposal is warranted
 
-Write a proposal to `improvements/pending/` when ANY of these fire:
+Write a proposal to `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/improvements/pending/` when ANY of these fire:
 
 1. **Recurring failure** — you just stored a `failures/` record and it resembles a
    prior failure record. A failure that repeats is a system problem, not a task
@@ -1068,7 +1070,7 @@ improvements/pending/YYYY-MM-DD_<short-id>.md
 **Rules:**
 - Do NOT silently rewrite agent prompts, skills, or architecture.
 - Do NOT modify core behavior without human approval — proposals live in
-  `improvements/pending/` until a human reviews them.
+  `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/improvements/pending/` until a human reviews them.
 - Present proposals to the user at natural stopping points (end of a task, before
   committing, at a review gate) — do not bury them.
 - Proposals are decisions, not actions: writing one does not implement it.

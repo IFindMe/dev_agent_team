@@ -17,7 +17,7 @@ set -uo pipefail
 #
 # Exit codes: 0 = all pass, 1 = any failure
 
-TEAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 AGENTS="$TEAM_ROOT/agents"
 MEMORY="$TEAM_ROOT/memory"
 SKILLS="$TEAM_ROOT/skills"

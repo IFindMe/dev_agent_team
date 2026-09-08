@@ -12,7 +12,7 @@
 # Run: bash scripts/test-integration.sh
 
 set -euo pipefail
-TEAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 AGENTS="$TEAM_ROOT/agents"
 SKILLS="$TEAM_ROOT/skills"
 MEMORY="$TEAM_ROOT/memory"

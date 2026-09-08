@@ -20,7 +20,7 @@ set -uo pipefail
 #   9. existing agent workflows still work (install.sh to temp target)
 #   10. malformed .opencode intelligence is handled safely (corrupted meta → re-bootstrap works)
 
-TEAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 BOOTSTRAP="$TEAM_ROOT/scripts/repo-bootstrap.sh"
 
 PASS=0; FAIL=0

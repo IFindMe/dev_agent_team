@@ -92,14 +92,18 @@ dev_agent_team/
 │   ├── applied/                       # approved and implemented
 │   └── rejected/                      # not approved
 ├── scripts/
-│   ├── install.sh                     # one-command installer
+│   ├── install.sh                     # one-command installer (agents + runtime tree; --uninstall/--migrate/--self-test)
 │   ├── repo-bootstrap.sh              # repository intelligence bootstrap tool
 │   ├── memory-lifecycle.sh            # memory CRUD operations
-│   ├── test-all.sh                    # single entry point that runs all test suites
+│   ├── test-all.sh                    # single entry point that runs all 8 test suites
 │   ├── test-repo-bootstrap.sh         # test suite for the bootstrap
 │   ├── test-agent-architecture.sh     # structural tests for the agent architecture
 │   ├── test-memory-system.sh          # structural tests for memory/skills/improvements
 │   ├── test-integration.sh            # end-to-end memory/skills/lifecycle integration tests
+│   ├── test-install.sh                # runtime-tree install + idempotency tests
+│   ├── test-runtime.sh                # runtime-after-source-deletion + bootstrap tests
+│   ├── test-path-resolution.sh        # prompt/skills/improvements path-resolution tests
+│   ├── test-memory-isolation.sh       # per-project memory isolation tests
 │   └── verify-permission-patterns.sh  # permission engine verifier
 └── docs/
     ├── PROMPT_INSTALL.md              # paste-ready prompt for installing from inside opencode
@@ -122,6 +126,26 @@ To install somewhere other than the default location:
 OPENCODE_AGENTS_DIR=/path/to/opencode/agents ./scripts/install.sh
 ```
 
+The installer also installs the **self-contained runtime tree** (scripts `bin/`,
+12 general-purpose skills `skills/`, improvements store, and an
+`install-manifest.json`) under `$OPENCODE_DEV_AGENT_TEAM` (default
+`$XDG_CONFIG_HOME/opencode/dev-agent-team`, fallback
+`~/.config/opencode/dev-agent-team`). After installation the source checkout may
+be deleted; the agents and runtime keep working from any project.
+
+Runtime-aware operations:
+
+```bash
+./scripts/install.sh               # install agents + full runtime tree (idempotent)
+./scripts/install.sh --uninstall   # remove manifest-tracked agents + runtime (keeps backups; preserves improvements/ unless --purge)
+./scripts/install.sh --uninstall --purge   # also remove improvements/ user data
+./scripts/install.sh --migrate     # one-time import of pending improvement proposals (no-op today)
+./scripts/install.sh --self-test   # run runtime test suites in a throwaway temp HOME
+```
+
+`--uninstall` never touches project `memory/`, `.opencode/`, `AgentsReport/`,
+or `~/.config/opencode/opencode.json`.
+
 ## Repository bootstrap
 
 After installing the agents, the bootstrap tool is available at
@@ -138,14 +162,15 @@ repo-bootstrap.sh bootstrap
 repo-bootstrap.sh refresh
 ```
 
-Run all test suites with a single command (aggregates the four suites below):
+Run all test suites with a single command (aggregates the eight suites below):
 
 ```bash
 bash scripts/test-all.sh
 ```
 
-51 individual checks across 4 suites (16 architecture + 12 memory + 11 bootstrap
-+ 12 integration). Any suite failing makes the overall exit code non-zero.
+97 individual checks across 8 suites (16 architecture + 12 memory + 11 bootstrap
++ 12 integration + 12 install + 10 runtime + 12 path-resolution + 12
+memory-isolation). Any suite failing makes the overall exit code non-zero.
 
 Individual suites:
 
@@ -157,6 +182,14 @@ Individual suites:
   (11 tests covering all 10 acceptance criteria).
 - `test-integration.sh` — end-to-end memory/skills/improvements integration
   (12 tests).
+- `test-install.sh` — runtime-tree install, manifest, rc export, backups,
+  and idempotency (12 tests).
+- `test-runtime.sh` — runtime survives after source deletion and works from
+  any unrelated project (10 tests).
+- `test-path-resolution.sh` — prompt/skills/improvements resolve to the
+  runtime root; project-scoped refs stay project-relative (12 tests).
+- `test-memory-isolation.sh` — per-project memory isolation via
+  `OPENCODE_MEMORY_DIR` (12 tests).
 
 ## Manual install alternative
 
