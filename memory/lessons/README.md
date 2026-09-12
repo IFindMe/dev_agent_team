@@ -27,4 +27,4 @@ Recurring: yes | no
 
 ## Index
 
-_No lessons recorded yet._
+- [Lesson-0001: Enumerate ALL byte-asserted anchors across ALL test suites before compressing agents/*.md](2026-09-12-anchor-enumeration-before-compression.md)
