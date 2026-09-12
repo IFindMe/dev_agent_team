@@ -8,7 +8,7 @@ behavior** in a live opencode session.
 ## How to run
 
 1. Install the team (`./scripts/install.sh`), restart opencode, verify
-   `opencode agent list` shows 13 agents.
+   `opencode agent list` shows 14 agents.
 2. Create or clone the fixture described for the scenario.
 3. Invoke the orchestrator with the scenario's prompt.
 4. Score the run using the rubric below. Record scores and notes in

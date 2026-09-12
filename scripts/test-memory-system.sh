@@ -196,7 +196,7 @@ fi
 # TEST 11: All subagents reference memory system
 # ======================================================================== #
 SUBAGENT_MEM_OK=1
-for sub in explorer detective builder reviewer maintainer writer tester toolsmith architect designer philosopher workflow-architect; do
+for sub in explorer detective builder breakdowner reviewer maintainer writer tester toolsmith architect designer philosopher workflow-architect; do
   f="$AGENTS/$sub.md"
   if [ ! -f "$f" ]; then
     fail "T11 all subagents reference memory" "missing $sub.md"
@@ -222,7 +222,7 @@ fi
 # TEST 12: All subagents reference skills system
 # ======================================================================== #
 SUBAGENT_SKILL_OK=1
-for sub in explorer detective builder reviewer maintainer writer tester toolsmith architect designer philosopher workflow-architect; do
+for sub in explorer detective builder breakdowner reviewer maintainer writer tester toolsmith architect designer philosopher workflow-architect; do
   f="$AGENTS/$sub.md"
   if ! grep -q "skill path\|SKILL\.md\|skills/" "$f" 2>/dev/null; then
     fail "T12 all subagents reference skills" "$sub.md missing skill references"

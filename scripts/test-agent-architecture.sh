@@ -154,13 +154,13 @@ for f in "$AGENTS"/*.md; do
   done
 done
 if [ -z "$SUB_FAIL" ]; then
-  ok "T10 all 12 subagents have Evidence & Handoffs with 9-field state"
+  ok "T10 all 13 subagents have Evidence & Handoffs with 9-field state"
 else
-  fail "T10 all 12 subagents have Evidence & Handoffs with 9-field state" "$SUB_FAIL"
+  fail "T10 all 13 subagents have Evidence & Handoffs with 9-field state" "$SUB_FAIL"
 fi
 
 # ======================================================================== #
-# TEST 11: roster integrity — exactly 13 agents, 1 primary + 12 subagents
+# TEST 11: roster integrity — exactly 14 agents, 1 primary + 13 subagents
 # ======================================================================== #
 ROSTER_OK=1
 N_FILES=0
@@ -172,10 +172,10 @@ for f in "$AGENTS"/*.md; do
   if grep -q "^mode: subagent$" "$f"; then N_SUB=$((N_SUB+1)); fi
   grep -q "^name: " "$f" || ROSTER_OK=0
 done
-if [ "$ROSTER_OK" = "1" ] && [ "$N_FILES" = "13" ] && [ "$N_PRIMARY" = "1" ] && [ "$N_SUB" = "12" ]; then
-  ok "T11 roster integrity: 13 agents (1 primary + 12 subagents)"
+if [ "$ROSTER_OK" = "1" ] && [ "$N_FILES" = "14" ] && [ "$N_PRIMARY" = "1" ] && [ "$N_SUB" = "13" ]; then
+  ok "T11 roster integrity: 14 agents (1 primary + 13 subagents)"
 else
-  fail "T11 roster integrity: 13 agents (1 primary + 12 subagents)" \
+  fail "T11 roster integrity: 14 agents (1 primary + 13 subagents)" \
        "files=$N_FILES primary=$N_PRIMARY sub=$N_SUB valid_names=$ROSTER_OK"
 fi
 
@@ -186,10 +186,10 @@ N_REF=0
 for f in "$AGENTS"/*.md; do
   assert_contains "$f" ".opencode" && N_REF=$((N_REF+1))
 done
-if [ "$N_REF" = "13" ]; then
-  ok "T12 all 13 agents reference the .opencode repository intelligence layer"
+if [ "$N_REF" = "14" ]; then
+  ok "T12 all 14 agents reference the .opencode repository intelligence layer"
 else
-  fail "T12 all 13 agents reference the .opencode repository intelligence layer" "only $N_REF/13"
+  fail "T12 all 14 agents reference the .opencode repository intelligence layer" "only $N_REF/14"
 fi
 
 # ======================================================================== #
@@ -233,6 +233,19 @@ if [ -f "$DOCS/AGENT_ARCHITECTURE.md" ] && [ -f "$DOCS/EVALUATION_SCENARIOS.md" 
   ok "T16 docs/AGENT_ARCHITECTURE.md and docs/EVALUATION_SCENARIOS.md exist"
 else
   fail "T16 docs/AGENT_ARCHITECTURE.md and docs/EVALUATION_SCENARIOS.md exist" "one or both missing"
+fi
+
+# ======================================================================== #
+# TEST 17: Task Breakdown dispatch threshold (breakdowner trigger markers)
+# ======================================================================== #
+if assert_contains "$ORCH" "## Task Breakdown Dispatch" \
+   && assert_contains "$ORCH" "MUST dispatch breakdowner" \
+   && assert_contains "$ORCH" "MUST NOT dispatch breakdowner" \
+   && [ -f "$AGENTS/breakdowner.md" ] \
+   && assert_contains "$AGENTS/breakdowner.md" "## Validation Invariant"; then
+  ok "T17 Task Breakdown dispatch threshold defined (breakdowner trigger markers)"
+else
+  fail "T17 Task Breakdown dispatch threshold defined (breakdowner trigger markers)" "orchestrator markers or agents/breakdowner.md missing"
 fi
 
 # ======================================================================== #

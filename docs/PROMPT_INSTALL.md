@@ -10,7 +10,7 @@ Paste-ready prompt:
 ```text
 Install my agent team from the dev_agent_team repo:
 1. Clone git@gitea.skink-platy.ts.net:admin/dev_agent_team.git into ~/projects/dev_agent_team.
-2. Run bash ~/projects/dev_agent_team/scripts/install.sh to copy the 13 agents into ~/.config/opencode/agents (existing files are backed up automatically).
-3. Verify by running `opencode agent list` and confirm exactly 13 agents are registered.
+2. Run bash ~/projects/dev_agent_team/scripts/install.sh to copy the 14 agents into ~/.config/opencode/agents (existing files are backed up automatically).
+3. Verify by running `opencode agent list` and confirm exactly 14 agents are registered.
 4. Report which agents were new and whether anything failed.
 ```

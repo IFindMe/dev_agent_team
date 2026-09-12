@@ -1,7 +1,7 @@
 # Agent Team Architecture — Adaptive, Evidence-Driven Upgrade (v2)
 
 This document describes the architecture of `dev_agent_team` after the second
-architectural upgrade: making the existing 13-agent team **adaptive,
+architectural upgrade: making the existing 14-agent team **adaptive,
 evidence-driven, repository-aware, cost-aware, and capable of long-horizon
 work**. It extends — it does not replace — the Repository Intelligence Bootstrap
 architecture documented in
@@ -27,7 +27,7 @@ architecture documented in
 | Completion | completion rule | **explicit stop conditions** (goal satisfied + verified, acceptable uncertainty, no useful action, blocked) |
 | Subagents | role boundaries + handoff formats | role-adapted **Evidence & Handoffs** sections; each agent knows its evidence product, knowledge ownership, stop, and escalation points |
 | Repository knowledge | bootstrap + skills | unchanged structure + **knowledge lifecycle** rules (discover → classify → identify owner → update only the relevant doc → preserve valid content) |
-| Agent roster | 13 agents | **still exactly 13 agents** (1 orchestrator primary + 12 subagents); no new roles, no removed roles |
+| Agent roster | 13 agents | **now exactly 14 agents** (1 orchestrator primary + 13 subagents); one new role (`breakdowner`) added |
 | Project memory | — | **deterministic cross-session memory** in `memory/` (decisions, lessons, failures, architecture, sessions) with lifecycle script |
 | Skills | — | **12 reusable specialized methodologies** in `skills/` loaded by agents when needed |
 | Improvements | — | **proposal-based improvement system** in `improvements/` requiring human approval |
@@ -337,6 +337,7 @@ dispatching agents whose reasoning is not required for the next decision.
 | Detective | — (consumer) | hypothesis/evidence/confidence, eliminated alternatives | root cause established |
 | Architect | architecture | decision record (options, trade-offs, scope) `[DECIDED/PROVISIONAL/BLOCKED]` | decision ready |
 | Builder | build-and-test (with Tester) | files changed + targeted verification actually run | brief end reached |
+| Breakdowner | .tasks/ structure (per-goal) | valid Task Breakdown + flag.json planning state | invariant holds + handoff ready |
 | Tester | build-and-test (with Builder) | tests run, pass/fail, coverage gaps | tests ready/provisional |
 | Designer | — (consumer) | design spec tied to user needs/constraints | design ready |
 | Reviewer | validation of all skills | verdict + findings with severity/certainty, lucky-pass detection | ACCEPT/CHANGES_REQUIRED/BLOCKED |
@@ -361,7 +362,7 @@ files or proposing identical fixes.
 ## 17. Evaluation
 
 Structural readiness is verified by `scripts/test-agent-architecture.sh`
-(currently 16 checks). Runtime behavior is evaluated through the 12 scenarios in
+(currently 17 checks). Runtime behavior is evaluated through the 12 scenarios in
 [EVALUATION_SCENARIOS.md](EVALUATION_SCENARIOS.md), scored on success,
 unnecessary work, repeated actions, verification quality, correct agent
 selection, cost/context growth, and recovery quality — not just pass/fail.
@@ -418,3 +419,62 @@ User: "Add a build cache to the pipeline and verify it improves CI time."
   if keywords don't match.
 - Improvement proposals require human approval, which may slow rapid iteration
   on agent behavior.
+
+## 21. Task Breakdown (14th agent: breakdowner)
+
+`breakdowner` is the 14th agent (approved 2026-09-12, Architect Decision): a
+planning-only subagent that re-writes LARGE goal prompts into a numbered,
+state-tracked **Task Breakdown** under `.tasks/<goal-name>/` so big goals
+execute from small, self-contained task files instead of re-feeding the giant
+prompt into every context. It produces the implementation plan only — never the
+implementation, the verification, or the workflow model.
+
+### Location and lifecycle
+
+- Every breakdown lives at `<project git root>/.tasks/<goal-name>/`, where
+  `<goal-name>` is a short kebab-case slug (e.g. `add-build-cache`).
+- `.tasks/` is **project-local, local-only, and gitignored — never committed and
+  never installed**. It is not copied by `scripts/install.sh`, is not part of
+  the runtime tree (`${OPENCODE_DEV_AGENT_TEAM}/...`), and must never be
+  referenced as a shipped artifact in docs.
+- A breakdown is created ONCE per goal and updated only on re-planning:
+  `analyze → break-down → create → verify deps → implement`, with per-task
+  state `pending → in-progress → done` (verify before `done`), next-task
+  selection from `depends-on`, and a living plan whose history is never deleted
+  (append new task numbers, never renumber; removed tasks leave noted gaps).
+
+### Artifact ownership
+
+| Artifact | Question answered | Owner | Location |
+|---|---|---|---|
+| Task Breakdown | "what tasks must be executed, in what order, in what state" (implementation-plan tree: README.md, 00-overview.md, NN-*.md, flag.json) | **Breakdowner** | `.tasks/<goal-name>/` |
+| Workflow model | "what states/transitions does the resulting system have" (domain behavior spec) | **Workflow Architect** | `AgentsReport/workflow-architect/<YYYY-MM-DD>_<for-what>.md` |
+
+- Workflow Architect READS the breakdown as input context and writes its model
+  only in its own report dir; it writes nothing into `.tasks/`. Breakdowner
+  never models behavior (no FSM/DAG/statechart).
+- Orchestrator may perform only the two mechanical `flag.json` execution flips
+  (set a task `in-progress` at dispatch; set it `done` only with
+  verified-completion evidence). Every other `.tasks/` mutation is re-planning
+  and must return to Breakdowner.
+
+### Trigger summary
+
+Dispatch `breakdowner` for large goals when ANY holds (measured before work
+dispatch): ≥ 3 likely files or medium/large scope; moderate/deep dependency
+depth; ≥ 3 specialist roles, or ≥ 2 specialists plus an integration step; goal
+context > ~800 tokens or > 5 artifacts/reports referenced simultaneously;
+long-horizon multi-session work with a state-tracked handoff chain. Never
+dispatch for goals that are single-file, fit one compact brief, need ≤ 2
+specialists with no integration, and are low risk.
+
+### Validation
+
+Every tree must satisfy the 6-point **validation invariant** before
+`breakdowner` claims done: `README.md`, `00-overview.md`, `flag.json` exist;
+`flag.json` parses with exactly the keys `goal`, `status`, `tasks`; every value
+is `pending|in-progress|done` and `goal` matches the slug; the `tasks` keys
+equal the set of zero-padded numbered files `NN-*.md` on disk; `00-overview.md`
+lists every numbered task; numbers are zero-padded ascending with no
+non-removal gaps. Full convention and spec summary:
+[Task Breakdown Agent (breakdowner)](TASK_BREAKDOWN_AGENT.md).

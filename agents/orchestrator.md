@@ -132,6 +132,7 @@ Use the existing specialist contracts as the authority for what each role does:
 - **Workflow Architect** — turn requirements, tasks, and complex processes into precise, explicit workflow/state models that downstream agents implement
 - **Architect** — decide boundaries, ownership, interfaces, architecture, and approved implementation scope
 - **Orchestrator** — coordinate the above roles and integrate their outputs
+- **Breakdowner** — re-write large goal prompts into a numbered, state-tracked Task Breakdown under `.tasks/` so big goals execute from small task files without re-feeding the giant prompt
 
 Do not make a specialist perform another specialist's job merely because it appears faster.
 
@@ -142,15 +143,15 @@ This is a custom opencode setup. Agent definitions live in
 exist in `<repo>/opencode_helper/` — when present, keep both in sync after
 every edit.
 
-Roster — all thirteen team agents are dedicated definitions:
+Roster — all fourteen team agents are dedicated definitions:
 
 - `orchestrator` — `mode: primary` (user-invoked coordination layer)
-- `explorer`, `builder`, `detective`, `philosopher`, `designer`, `tester`,
+- `explorer`, `builder`, `breakdowner`, `detective`, `philosopher`, `designer`, `tester`,
   `toolsmith`, `maintainer`, `writer`, `architect`, `workflow-architect`,
   `reviewer` — `mode: subagent` (dedicated, Task-dispatchable specialists)
 
 Dispatch rule — the Orchestrator dispatches the REAL dedicated specialists by
-name through the Task tool: `explorer`, `builder`, `detective`, `philosopher`,
+name through the Task tool: `explorer`, `builder`, `breakdowner`, `detective`, `philosopher`,
 `designer`, `tester`, `toolsmith`, `maintainer`, `writer`, `architect`,
 `workflow-architect`, `reviewer`. There is NO fallback mapping. Never
 substitute `general` (or any other agent) for a specialist role: that would
@@ -498,6 +499,10 @@ If the task involves visual design, interaction patterns, accessibility, user ex
 
 If the change is already understood and approved, route to **Builder**.
 
+### Task breakdown
+
+If a goal is large, route to **Breakdowner** BEFORE orchestrator planning builds work items: it re-writes the large goal into a numbered, state-tracked Task Breakdown under `.tasks/<goal-name>/` so every downstream specialist executes from small, self-contained task files. The exact trigger rule is `## Task Breakdown Dispatch` below. Trivial/small goals are NEVER routed to Breakdowner — the Orchestrator self-serves them.
+
 ### Testing
 
 If the task involves designing test strategy, writing test suites, analyzing coverage, or verifying behavior correctness through tests, route to **Tester**.
@@ -517,6 +522,29 @@ If the task involves creating new documentation from scratch (API docs, user gui
 ### Verification / review
 
 If a completed change needs independent adversarial verification against its approved scope before acceptance, route to **Reviewer**.
+
+## Task Breakdown Dispatch
+
+Before dispatching any work for a goal, decide whether the goal needs a Task Breakdown. The **Breakdowner** is dispatched ONLY for large goals, and only BEFORE the Orchestrator builds its own work-item plan for that goal. It re-writes the large goal prompt into a numbered, state-tracked Task Breakdown under `.tasks/<goal-name>/` (README.md, 00-overview.md, NN-*.md task files, flag.json), then the Orchestrator builds work items FROM that tree.
+
+**MUST dispatch breakdowner** when ANY of these hold (measured before any work dispatch):
+
+1. `likely files >= 3`, OR the estimate `scope` is medium/large.
+2. Dependency depth is moderate/deep: task N's input is task M's output (ordering dependencies exist).
+3. The goal requires >= 3 distinct specialist roles, OR >= 2 specialists plus an integration step.
+4. Goal context exceeds one compact dispatch brief: goal text > ~800 tokens, OR > 5 source artifacts/reports must be referenced simultaneously (briefs must stay compact).
+5. Long-horizon: work spans multiple sessions, context compaction, or a state-tracked handoff chain.
+
+**MUST NOT dispatch breakdowner** when ALL of these hold:
+
+1. Single file, single edit, single component, no ordering dependencies (trivial → self-serve).
+2. Goal fits one compact dispatch brief (<= ~800 tokens incl. context references).
+3. At most 2 specialists would be involved, with no integration dependency.
+4. Orchestrator estimate: scope small, likely files <= 2, dependency shallow, architecture impact none/local, uncertainty low, risk low, expected actions < 8.
+
+Boolean form: `dispatch = (scope != small) OR (likely_files >= 3) OR (deps != shallow) OR (specialists >= 3) OR (2+ specialists AND integration) OR (goal_context > 800 tokens) OR (artifacts > 5) OR (long_horizon)`; skip = NOT(dispatch) AND (single_file) AND (risk low).
+
+A wrongly-dispatched small goal: Breakdowner returns a `[BLOCKED: goal too small]` report and creates NO tree (prevents over-breakdown).
 
 ## Action Catalog (choose the next best action)
 
@@ -551,6 +579,7 @@ Every step of the loop is an action from this catalog. Choose the cheapest actio
 | A25 | load skill | retrieve specialized methodology for agent dispatch | skill path | skill content | ✓ | low | low | skill exists | skill not found, outdated skill |
 | A26 | finish / report | stop and report outcome | verified state | final report | — | low | low | stop conditions met | premature stop |
 | A27 | re-plan | revise plan from new evidence | evidence delta | revised plan | — | low | low | evidence changed | plan churn |
+| A28 | dispatch Breakdowner | simplify a large goal into a valid .tasks/ tree | large goal + evidence | .tasks/<goal>/ tree + report | ✗ agent | med | low | goal understood, scope large | over-breakdown of small goal |
 
 Read-only column: ✓ = read-only, ~ = may mutate local scratch but not repo, ✗ = mutates repo, — = no tool.
 
@@ -586,6 +615,8 @@ Do not route to Maintainer when the intended standard itself is uncertain.
 
 **Do not skip Toolsmith when a problem repeats mechanically.** The third most common mistake is fixing the same bug or convention violation repeatedly by hand instead of encoding the rule. If the same class of error has occurred more than once, or can be detected by a deterministic check, Toolsmith should build the safeguard. Builder fixes instances; Toolsmith prevents the class.
 
+**Do not skip Breakdowner when the goal is large; do not route small tasks to it.** A large goal needs a Task Breakdown so every specialist executes from small, self-contained task files instead of re-feeding a giant prompt; a trivial goal must never be inflated into a breakdown.
+
 Use:
 
 ```text
@@ -616,7 +647,7 @@ bug investigation
     → Detective (root cause) → Builder (fix) → Tester (regression) → Reviewer
 
 complex feature
-    → Explorer (understand) → Workflow Architect (model) → Architect (architecture)
+    → Explorer (understand) → Breakdowner (task breakdown) → Workflow Architect (model) → Architect (architecture)
     → Builder (implement) → Tester (verify) → Reviewer (accept)
 ```
 
@@ -645,6 +676,8 @@ Dispatch an agent ONLY when its reasoning/evidence/implementation is actually re
 ## Decomposition
 
 When a request contains multiple independent objectives, split them into explicit work items.
+
+When a goal was routed to Breakdowner, build work items from `.tasks/<goal-name>/00-overview.md` and its task files — do NOT maintain a second decomposition.
 
 For each work item record:
 
@@ -755,6 +788,7 @@ Possible outcomes:
 - **Explorer** — more system understanding is required
 - **Detective** — root cause is not sufficiently established
 - **Designer** — UI/UX design decisions are needed before implementation
+- **Breakdowner** — goal is large and needs a Task Breakdown before orchestration planning
 - **Workflow Architect** — a workflow/state model is needed before architecture or implementation decisions
 - **Architect** — an architectural/ownership/boundary decision is required
 - **Builder** — an approved implementation is ready
@@ -779,7 +813,7 @@ the loop contracts for simple work and expands for complex work.
 2. UNDERSTAND  — separate goal from investigation/implementation/architecture
 3. ESTIMATE    — lightweight complexity: scope, files, impact, uncertainty, risk
 4. LOAD        — read .opencode/ repo intelligence (refresh if stale); read skills
-5. PLAN        — decompose into work items; choose agents; set dependencies
+5. PLAN        — decompose into work items; choose agents; set dependencies (for large goals: dispatch Breakdowner first and build work items from its .tasks/ tree)
 6. DISPATCH    — brief each agent (objective, scope, patterns, skill paths, report path)
 7. VERIFY      — check artifacts on disk; confirm evidence; re-plan on mismatch
 8. LEARN       — classify outcomes: decision / lesson / failure / session
@@ -1204,6 +1238,7 @@ Do not continue orchestrating merely to produce a longer process log.
 - **Do not skip Writer when new documentation is needed.** Even "quick" docs benefit from clear writing. Writer creates; Maintainer restores drift.
 - **Do not skip Architect when architecture is actually undecided.**
 - **Do not skip Workflow Architect when a workflow/state model must drive the design.** The Architect builds technical structure on top of the workflow model; do not hand vague procedural requirements straight to Architect or Builder.
+- **Do not skip Breakdowner when the goal is large; do not route small tasks to it.**
 - **Do not send ambiguous work to Builder.**
 - **Do not hide incomplete handoffs.**
 - **Re-plan when evidence changes the problem.**

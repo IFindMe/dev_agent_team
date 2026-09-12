@@ -158,7 +158,7 @@ for af in "$TEAM_ROOT"/agents/*.md; do
     MISSING_AGENTS="$MISSING_AGENTS $ANAME"
   fi
 done
-if [ "$AGENT_COUNT" -eq 13 ] && [ -z "$MISSING_AGENTS" ]; then
+if [ "$AGENT_COUNT" -eq 14 ] && [ -z "$MISSING_AGENTS" ]; then
   ok "T06 all $AGENT_COUNT agents reference .opencode"
 else
   fail "T06 all agents reference .opencode" \
@@ -205,7 +205,7 @@ fi
 
 # ======================================================================== #
 # TEST 9: existing agent workflows still work
-#          (install.sh to temp target — 13 agents copied; treat "no runtime"
+#          (install.sh to temp target — 14 agents copied; treat "no runtime"
 #           verifier exit 2 as SKIP since copies succeed regardless)
 # ======================================================================== #
 TEST9_TARGET="$T/install_target9"
@@ -215,18 +215,18 @@ if [ -f "$TEAM_ROOT/scripts/install.sh" ]; then
   OPENCODE_AGENTS_DIR="$TEST9_TARGET" bash "$TEAM_ROOT/scripts/install.sh" >/dev/null 2>&1 || INST_RC=$?
   AGENTS_COPIED=$(find "$TEST9_TARGET" -name '*.md' -maxdepth 1 | wc -l)
   if [ "$INST_RC" -eq 0 ] || [ "$INST_RC" -eq 2 ]; then
-    if [ "$AGENTS_COPIED" -eq 13 ]; then
-      ok "T09 install.sh copies 13 agents to temp target (rc=$INST_RC, runtime=$([ $INST_RC -eq 0 ] && echo 'yes' || echo 'skip/no-op'))"
+    if [ "$AGENTS_COPIED" -eq 14 ]; then
+      ok "T09 install.sh copies 14 agents to temp target (rc=$INST_RC, runtime=$([ $INST_RC -eq 0 ] && echo 'yes' || echo 'skip/no-op'))"
     else
-      fail "T09 install.sh copies 13 agents to temp target" \
+      fail "T09 install.sh copies 14 agents to temp target" \
         "only $AGENTS_COPIED .md files copied"
     fi
   else
-    fail "T09 install.sh copies 13 agents to temp target" \
+    fail "T09 install.sh copies 14 agents to temp target" \
       "install.sh exited $INST_RC"
   fi
 else
-  skip "T09 install.sh copies 13 agents" "scripts/install.sh not found"
+  skip "T09 install.sh copies 14 agents" "scripts/install.sh not found"
 fi
 
 # ======================================================================== #

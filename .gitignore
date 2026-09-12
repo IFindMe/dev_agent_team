@@ -9,3 +9,6 @@ AgentsReport/**
 
 # Local opencode session artifacts (never tracked)
 session
+
+# Per-project Task Breakdown trees (created by breakdowner, never committed)
+.tasks/

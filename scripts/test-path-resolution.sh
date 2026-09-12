@@ -3,7 +3,7 @@ set -uo pipefail
 
 # test-path-resolution.sh — Verify runtime path resolution for agents, skills,
 # and improvements. Proves (parent D9 proof 6 + 9):
-#   6. all 13 prompts contain the canonical runtime sentence; runtime skills/
+#   6. all 14 prompts contain the canonical runtime sentence; runtime skills/
 #      has 12 SKILL.md with required frontmatter; sampling read via resolved path.
 #   9. runtime improvements/ scaffold + proposal-file flow; existing
 #      test-agent-architecture checks re-run against installed prompts.
@@ -48,10 +48,10 @@ for f in "$AGENTS"/*.md; do
   N_AGENTS=$((N_AGENTS+1))
   grep -qF "$CANONICAL" "$f" || MISSING_CANON="$MISSING_CANON $(basename "$f")"
 done
-if [ "$N_AGENTS" = "13" ] && [ -z "$MISSING_CANON" ]; then
-  ok "T01 all 13 agent prompts contain canonical runtime sentence"
+if [ "$N_AGENTS" = "14" ] && [ -z "$MISSING_CANON" ]; then
+  ok "T01 all 14 agent prompts contain canonical runtime sentence"
 else
-  fail "T01 all 13 agent prompts contain canonical runtime sentence" \
+  fail "T01 all 14 agent prompts contain canonical runtime sentence" \
     "agents=$N_AGENTS missing:$MISSING_CANON"
 fi
 
@@ -112,10 +112,10 @@ RESOLVED_REF=0
 for f in "$AGENTS"/*.md; do
   grep -qF '${OPENCODE_DEV_AGENT_TEAM:-' "$f" && RESOLVED_REF=$((RESOLVED_REF+1))
 done
-if [ "$RESOLVED_REF" -ge 13 ]; then
-  ok "T04 all 13 prompts reference the runtime-resolved path form"
+if [ "$RESOLVED_REF" -ge 14 ]; then
+  ok "T04 all 14 prompts reference the runtime-resolved path form"
 else
-  fail "T04 all 13 prompts reference runtime-resolved path form" "resolved_ref=$RESOLVED_REF/13"
+  fail "T04 all 14 prompts reference runtime-resolved path form" "resolved_ref=$RESOLVED_REF/14"
 fi
 
 # ======================================================================== #
@@ -163,16 +163,16 @@ else
 fi
 
 # ======================================================================== #
-# TEST T08: all 13 prompts still reference .opencode (project-scoped retained)
+# TEST T08: all 14 prompts still reference .opencode (project-scoped retained)
 # ======================================================================== #
 N_OP=0
 for f in "$AGENTS"/*.md; do
   assert_contains "$f" ".opencode" && N_OP=$((N_OP+1))
 done
-if [ "$N_OP" = "13" ]; then
-  ok "T08 all 13 prompts retain project-scoped .opencode references"
+if [ "$N_OP" = "14" ]; then
+  ok "T08 all 14 prompts retain project-scoped .opencode references"
 else
-  fail "T08 all 13 prompts retain project-scoped .opencode" "only $N_OP/13"
+  fail "T08 all 14 prompts retain project-scoped .opencode" "only $N_OP/14"
 fi
 
 # ======================================================================== #
@@ -182,10 +182,10 @@ N_MEM=0
 for f in "$AGENTS"/*.md; do
   grep -qE 'memory-lifecycle\.sh recall|memory-lifecycle\.sh store|`memory/`|memory/' "$f" && N_MEM=$((N_MEM+1))
 done
-if [ "$N_MEM" = "13" ]; then
-  ok "T09 all 13 prompts retain project-scoped memory references"
+if [ "$N_MEM" = "14" ]; then
+  ok "T09 all 14 prompts retain project-scoped memory references"
 else
-  fail "T09 all 13 prompts retain project-scoped memory references" "only $N_MEM/13"
+  fail "T09 all 14 prompts retain project-scoped memory references" "only $N_MEM/14"
 fi
 
 # ======================================================================== #
@@ -230,8 +230,8 @@ for f in "$AGENTS"/*.md; do
   grep -q "^mode: primary$" "$f" && N_PRIM=$((N_PRIM+1))
   grep -q "^mode: subagent$" "$f" && N_SUB=$((N_SUB+1))
 done
-if [ "$NFILE" = "13" ] && [ "$N_PRIM" = "1" ] && [ "$N_SUB" = "12" ]; then
-  ok "T12 roster integrity: 13 agents (1 primary + 12 subagents)"
+if [ "$NFILE" = "14" ] && [ "$N_PRIM" = "1" ] && [ "$N_SUB" = "13" ]; then
+  ok "T12 roster integrity: 14 agents (1 primary + 13 subagents)"
 else
   fail "T12 roster integrity" "files=$NFILE primary=$N_PRIM sub=$N_SUB"
 fi

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install the 13 dev_agent_team opencode agents AND the self-contained runtime
+# Install the 14 dev_agent_team opencode agents AND the self-contained runtime
 # tree into a local opencode config.
 #
 # The runtime tree is installed under $OPENCODE_DEV_AGENT_TEAM (default
@@ -23,7 +23,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${OPENCODE_AGENTS_DIR:-$HOME/.config/opencode/agents}"
-EXPECTED_COUNT=13
+EXPECTED_COUNT=14
 KEEP_BACKUPS=5
 
 # Runtime root resolution (D3/D8): env var first, then XDG_CONFIG_HOME, then
@@ -451,10 +451,12 @@ if [ "$SELF_TEST" = "1" ]; then
   env -i HOME="$SELF_TMP_HOME" \
       OPENCODE_AGENTS_DIR="$SELF_AG" \
       OPENCODE_DEV_AGENT_TEAM="$SELF_RT" \
+      TEAM_ROOT="$SELF_SRC" \
       bash "$RUNTIME_ROOT/bin/test-install.sh" >"$SELF_T/install.log" 2>&1 && self_install=0 || self_install=$?
   env -i HOME="$SELF_TMP_HOME" \
       OPENCODE_AGENTS_DIR="$SELF_AG" \
       OPENCODE_DEV_AGENT_TEAM="$SELF_RT" \
+      TEAM_ROOT="$SELF_SRC" \
       bash "$RUNTIME_ROOT/bin/test-memory-isolation.sh" >"$SELF_T/mem.log" 2>&1 && self_mem=0 || self_mem=$?
   if [ "$self_install" = "0" ] && [ "$self_mem" = "0" ]; then
     echo "    self-test: PASS (test-install + test-memory-isolation sub-suites green)"

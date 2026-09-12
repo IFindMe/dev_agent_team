@@ -72,13 +72,13 @@ else
 fi
 
 # ======================================================================== #
-# TEST T02: 13 agents copied to the target
+# TEST T02: 14 agents copied to the target
 # ======================================================================== #
 N_AG="$(( $(find "$AGENTS_T" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l) ))"
-if [ "$N_AG" = "13" ]; then
-  ok "T02 13 agents copied to agents target ($N_AG/13)"
+if [ "$N_AG" = "14" ]; then
+  ok "T02 14 agents copied to agents target ($N_AG/14)"
 else
-  fail "T02 13 agents copied to agents target" "only $N_AG/13 at $AGENTS_T"
+  fail "T02 14 agents copied to agents target" "only $N_AG/14 at $AGENTS_T"
 fi
 
 # ======================================================================== #

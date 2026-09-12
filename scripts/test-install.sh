@@ -3,7 +3,7 @@ set -uo pipefail
 
 # test-install.sh — Verify the installer installs a working runtime and is
 # idempotent (parent D9 proofs 1 and 2).
-#   1. install works: temp HOME + temp source; run install; assert 13 agents,
+#   1. install works: temp HOME + temp source; run install; assert 14 agents,
 #      runtime bin/ executables, skills 12+SKILLS.md, improvements scaffold,
 #      manifest, and shell-rc export present.
 #   2. install idempotent: second run produces byte-identical agents, single
@@ -40,25 +40,25 @@ mkdir -p "$SRC/scripts" "$SRC/skills" "$SRC/improvements"
 cp -p "$SRC_SCRIPTS"/*.sh "$SRC/scripts/" 2>/dev/null || true
 cp -r "$TEAM_ROOT/skills/." "$SRC/skills/" 2>/dev/null || true
 cp -r "$TEAM_ROOT/improvements/." "$SRC/improvements/" 2>/dev/null || true
-# Guarantee the 13-agent gate passes (install shuts down if <13 at source).
+# Guarantee the 14-agent gate passes (install shuts down if <14 at source).
 N_SRC_AGENTS="$(( $(ls "$SRC"/agents/*.md 2>/dev/null | wc -l) ))"
-if [ "$N_SRC_AGENTS" != "13" ]; then
-  echo "FAIL  setup — source agents count $N_SRC_AGENTS (need 13)" >&2
+if [ "$N_SRC_AGENTS" != "14" ]; then
+  echo "FAIL  setup — source agents count $N_SRC_AGENTS (need 14)" >&2
   exit 1
 fi
 
 # ======================================================================== #
-# TEST T01: install works — 13 agents copied to target
+# TEST T01: install works — 14 agents copied to target
 # ======================================================================== #
 env -i HOME="$HOME_T" \
   OPENCODE_AGENTS_DIR="$AGENTS_T" \
   OPENCODE_DEV_AGENT_TEAM="$RUNTIME" \
   bash "$SRC/scripts/install.sh" >/dev/null 2>&1
 N_AG="$(( $(find "$AGENTS_T" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l) ))"
-if [ "$N_AG" = "13" ]; then
-  ok "T01 13 agents copied to agents target ($N_AG/13)"
+if [ "$N_AG" = "14" ]; then
+  ok "T01 14 agents copied to agents target ($N_AG/14)"
 else
-  fail "T01 13 agents copied to agents target" "got $N_AG/13"
+  fail "T01 14 agents copied to agents target" "got $N_AG/14"
 fi
 
 # ======================================================================== #
@@ -237,7 +237,7 @@ fi
 
 # ======================================================================== #
 # TEST T13: --uninstall removes manifest-tracked agents from TARGET
-#           (13 -> 0) and leaves agent .backup/ in place
+#           (14 -> 0) and leaves agent .backup/ in place
 # ======================================================================== #
 U13_RUNTIME="$T/runtime13"
 U13_AGENTS="$T/agents13"
@@ -252,9 +252,9 @@ env -i HOME="$HOME_T" \
   OPENCODE_DEV_AGENT_TEAM="$U13_RUNTIME" \
   bash "$SRC/scripts/install.sh" --uninstall </dev/null >/dev/null 2>&1
 N_U13_AFTER="$(find "$U13_AGENTS" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l)"
-if [ "$N_U13_BEFORE" = "13" ] && [ "$N_U13_AFTER" = "0" ] \
+if [ "$N_U13_BEFORE" = "14" ] && [ "$N_U13_AFTER" = "0" ] \
    && [ -d "$U13_AGENTS/.backup" ]; then
-  ok "T13 --uninstall removes manifest-tracked agents (13 -> $N_U13_AFTER), leaves .backup/"
+  ok "T13 --uninstall removes manifest-tracked agents (14 -> $N_U13_AFTER), leaves .backup/"
 else
   fail "T13 --uninstall removes agents, leaves .backup/" \
     "before=$N_U13_BEFORE after=$N_U13_AFTER backup_present=$([ -d "$U13_AGENTS/.backup" ] && echo yes || echo no)"

@@ -1,17 +1,17 @@
 # dev_agent_team
 
-A distributable package of 13 opencode agent definitions plus a one-command
+A distributable package of 14 opencode agent definitions plus a one-command
 installer, so the same agent team can be set up identically on any machine.
 
 ## What this is
 
 This repository packages a complete multi-agent team for
-[opencode](https://opencode.ai) — 13 role-specialized agents that work as one
+[opencode](https://opencode.ai) — 14 role-specialized agents that work as one
 system:
 
-`architect`, `builder`, `designer`, `detective`, `explorer`, `maintainer`,
-`orchestrator` (primary), `philosopher`, `reviewer`, `tester`, `toolsmith`,
-`workflow-architect`, `writer`.
+`architect`, `builder`, `breakdowner`, `designer`, `detective`, `explorer`,
+`maintainer`, `orchestrator` (primary), `philosopher`, `reviewer`, `tester`,
+`toolsmith`, `workflow-architect`, `writer`.
 
 The agent definitions live in `agents/` and are copied verbatim into your
 opencode config directory by `scripts/install.sh`. The installer is idempotent:
@@ -64,7 +64,8 @@ Both systems require **human approval** for changes to core agent behavior
 dev_agent_team/
 ├── README.md                          # this file
 ├── .gitignore
-├── agents/                            # the 13 agent definitions (*.md)
+├── agents/                            # the 14 agent definitions (*.md)
+├── .tasks/                            # per-project Task Breakdown (gitignored; created by breakdowner, never committed)
 ├── memory/                            # cross-session project memory
 │   ├── MEMORY.md                      # index with lifecycle rules
 │   ├── decisions/                     # architectural/technical choices
@@ -168,22 +169,22 @@ Run all test suites with a single command (aggregates the eight suites below):
 bash scripts/test-all.sh
 ```
 
-97 individual checks across 8 suites (16 architecture + 12 memory + 11 bootstrap
-+ 12 integration + 12 install + 10 runtime + 12 path-resolution + 12
+105 individual checks across 8 suites (17 architecture + 16 memory + 11 bootstrap
++ 12 integration + 15 install + 10 runtime + 12 path-resolution + 12
 memory-isolation). Any suite failing makes the overall exit code non-zero.
 
 Individual suites:
 
 - `test-agent-architecture.sh` — architecture contains the required
-  adaptive/evidence-driven elements (16 structural tests).
+  adaptive/evidence-driven elements (17 structural tests).
 - `test-memory-system.sh` — memory, skills, and improvement systems are
-  structurally sound (12 tests).
+  structurally sound (16 tests).
 - `test-repo-bootstrap.sh` — bootstrap behavior and idempotency
   (11 tests covering all 10 acceptance criteria).
 - `test-integration.sh` — end-to-end memory/skills/improvements integration
   (12 tests).
 - `test-install.sh` — runtime-tree install, manifest, rc export, backups,
-  and idempotency (12 tests).
+  and idempotency (15 tests).
 - `test-runtime.sh` — runtime survives after source deletion and works from
   any unrelated project (10 tests).
 - `test-path-resolution.sh` — prompt/skills/improvements resolve to the
@@ -226,6 +227,6 @@ After installing:
    opencode agent list
    ```
 
-3. You should see exactly **13 agents**: architect, builder, designer,
-   detective, explorer, maintainer, orchestrator, philosopher, reviewer,
-   tester, toolsmith, workflow-architect, writer.
+3. You should see exactly **14 agents**: architect, builder, breakdowner,
+   designer, detective, explorer, maintainer, orchestrator, philosopher,
+   reviewer, tester, toolsmith, workflow-architect, writer.
