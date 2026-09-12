@@ -1,0 +1,8 @@
+# Failure: orchestrator compression anchor matrix omitted test-path-resolution T01 canonical runtime sentence
+
+- **Date**: 2026-09-12
+- **Project**: dev_agent_team
+- **What happened**: The semantic-compression refactor of `agents/orchestrator.md` extracted the canonical runtime sentence's second/third clauses (`Runtime-owned artifacts live under ...`, `Project-scoped artifacts (...) stay relative to this project.`) to `docs/OPERATIONS_REFERENCE.md:31`, leaving only the first clause in orchestrator.md:93. `scripts/test-path-resolution.sh T01` greps `agents/*.md` for the FULL byte-exact sentence, so it failed (`missing: orchestrator.md`), making `bash scripts/test-all.sh` 7/8.
+- **Root cause**: The Architect decision C anchor matrix enumerated 62 test anchors (T01–T17 fixed, sibling suites) but did NOT include test-path-resolution T01's canonical runtime sentence as a load-bearing byte string, even though it is asserted against `agents/*.md` by a different suite (the compression scope listed test-agent-architecture T01–T09/T13–T15/T17, test-integration I06–I08/I11/I12, memory T08/T09, repo T05 — path-resolution T01 was not among the enumerated exercising suites).
+- **Prevention**: When compressing any `agents/*.md` prompt, first enumerate ALL `grep -qF` byte strings asserted against that file across ALL test suites (including test-path-resolution, test-install, test-runtime), not only the suites the brief names. Verify `test-path-resolution T01` stays green pre-commit.
+- **Status**: closed 2026-09-12 — full byte-exact canonical sentence restored at orchestrator.md:93; `test-path-resolution T01` PASS; `test-all.sh` 8/8 (105 checks). Lesson for future compression tasks: enumerate ALL grep-asserted byte strings across ALL suites before extraction.
