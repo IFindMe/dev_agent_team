@@ -245,12 +245,30 @@ Keep five kinds of state separate (do not merge them into one file):
 ```text
 repository knowledge  → .opencode/ skills + AGENTS.md (durable, role-owned)
 project memory        → memory/ decisions, lessons, failures, architecture, sessions (cross-session)
-task state            → AgentsReport/<agent>/ reports (current task only)
+task state            → .tasks/<goal>/tasks.json (authoritative JSON) + AgentsReport/<agent>/ reports (Markdown)
 agent handoff state   → the state records you pass between agents
 scratch               → /tmp/opencode or in-memory (throwaway)
 ```
 
 Never persist temporary task details as permanent repository knowledge; never put durable repo facts only in a task report.
+
+### JSON machine-state conventions
+
+Machine-readable state is JSON; human-readable knowledge/reports/plans/lessons are Markdown.
+
+- Per-goal task state: `.tasks/<goal>/tasks.json` — the **authoritative task state** (statuses, assignments, dependencies, timestamps). NEVER parse Markdown for task status; status comes from `tasks.json` only.
+- Project-level machine state: `.tasks/agents.json` (derived agent roster), `.tasks/sessions.json` (derived session cursor), `.tasks/events.jsonl` (append-only JSONL event log).
+- Markdown homes stay as they are: reports at `AgentsReport/<agent>/`, plans at `.tasks/<goal>/00-overview.md`, and `memory/sessions/*.md` remains the sessions source of truth — `.tasks/sessions.json` is only the derived cursor.
+
+### Task state via state.sh
+
+`scripts/state.sh` (installed to runtime as `bin/state.sh`) is the operating mechanism for task state:
+
+- Mutating subcommands: `state.sh task create/assign/status/complete/fail/cancel/deps/blocked-detect`; read-only queries: `state.sh query pending|agent|status`; journal: `state.sh log tail`.
+- Every mutation appends one line to `.tasks/events.jsonl`.
+- Only sanctioned transitions are allowed — 7 states: `pending | assigned | in_progress | blocked | completed | failed | cancelled`.
+- The Orchestrator's two execution flips run through `state.sh` into `tasks.json`: `task status <NN> in_progress` at dispatch; `task status <NN> completed` only with verified-completion evidence.
+- Implementers never self-flip their own task state; they report completion to the Orchestrator, which verifies and flips.
 
 ### Long-horizon persistence
 
@@ -394,7 +412,7 @@ the loop contracts for simple work and expands for complex work.
 2. UNDERSTAND  — separate goal from investigation/implementation/architecture
 3. ESTIMATE    — lightweight complexity: scope, files, impact, uncertainty, risk
 4. LOAD        — read .opencode/ repo intelligence (refresh if stale); read skills
-5. PLAN        — decompose into work items; choose agents; set dependencies (large goals: Breakdowner first, then build from its .tasks/ tree)
+5. PLAN        — decompose into work items; choose agents; set dependencies; record tasks in .tasks/<goal>/tasks.json via state.sh (large goals: Breakdowner first, then build from its .tasks/ tree)
 6. DISPATCH    — brief each agent (objective, scope, patterns, skill paths, report path)
 7. VERIFY      — check artifacts on disk; confirm evidence; re-plan on mismatch
 8. LEARN       — classify outcomes: decision / lesson / failure / session
@@ -484,6 +502,8 @@ Verification:
 Memory recall:      <keywords to check in memory before work>
 Skills to load:     <skill path(s) if any>
 ```
+
+`ID:` is the task id in `.tasks/<goal>/tasks.json` when the goal has a breakdown (the task record is created there by Breakdowner at CREATE, or via `state.sh task create` for self-serve goals); otherwise it is a local work-item label. This template stays the human-readable dispatch brief — task status is read from `tasks.json`, never parsed from this Markdown.
 
 A work item must be small enough that its assigned specialist can finish without silently becoming another role.
 
@@ -646,7 +666,7 @@ Never override a specialist's explicit boundary merely to keep the workflow movi
 
 ## Task Breakdown Dispatch
 
-Before dispatching any work for a goal, decide whether the goal needs a Task Breakdown. The **Breakdowner** is dispatched ONLY for large goals, and only BEFORE the Orchestrator builds its own work-item plan for that goal. It re-writes the large goal prompt into a numbered, state-tracked Task Breakdown under `.tasks/<goal-name>/` (README.md, 00-overview.md, NN-*.md task files, flag.json — tree format/validation: docs/TASK_BREAKDOWN_AGENT.md), then the Orchestrator builds work items FROM that tree.
+Before dispatching any work for a goal, decide whether the goal needs a Task Breakdown. The **Breakdowner** is dispatched ONLY for large goals, and only BEFORE the Orchestrator builds its own work-item plan for that goal. It re-writes the large goal prompt into a numbered, state-tracked Task Breakdown under `.tasks/<goal-name>/` (README.md, 00-overview.md, NN-*.md task files, tasks.json — tree format/validation: docs/TASK_BREAKDOWN_AGENT.md), then the Orchestrator builds work items FROM that tree.
 
 **MUST dispatch breakdowner** when ANY of these hold (measured before any work dispatch):
 
@@ -925,6 +945,6 @@ Trigger detail, detection flow, proposal format, and rules: docs/OPERATIONS_REFE
 |-----|----------|-----------|------|
 | Repository Intelligence | bootstrap workflow, tool + inline fallback, staleness detection, ownership rules, consumption rules, backward compatibility, knowledge lifecycle | bootstrapping/refreshing `.opencode/`, deciding who may enrich it | docs/REPOSITORY_INTELLIGENCE.md |
 | Operations Reference | environment/setup, conflict resolution, learning & memory storage, improvement proposals, scope expansion | ops/lifecycle actions off the mainline loop | docs/OPERATIONS_REFERENCE.md |
-| Task Breakdown | `.tasks/` tree format, validation, flag.json | dispatching Breakdowner | docs/TASK_BREAKDOWN_AGENT.md |
+| Task Breakdown | `.tasks/` tree format, validation, tasks.json (authoritative) + flag.json (legacy) | dispatching Breakdowner | docs/TASK_BREAKDOWN_AGENT.md |
 | Agent Architecture | full architecture spec | architecture-level questions | docs/AGENT_ARCHITECTURE.md |
 | Improvements | proposal index and status | reviewing/reading proposals | improvements/README.md |

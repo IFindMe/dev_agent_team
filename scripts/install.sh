@@ -6,7 +6,7 @@ set -euo pipefail
 #
 # The runtime tree is installed under $OPENCODE_DEV_AGENT_TEAM (default
 # $XDG_CONFIG_HOME/opencode/dev-agent-team, fallback ~/.config/opencode/dev-agent-team):
-#   bin/            - memory-lifecycle.sh, repo-bootstrap.sh, verify-permission-patterns.sh, test suites
+#   bin/            - memory-lifecycle.sh, repo-bootstrap.sh, verify-permission-patterns.sh, state.sh, test suites
 #   skills/         - 12 general-purpose skills + SKILLS.md (managed, read-only)
 #   improvements/   - README (only if absent) + pending/applied/rejected (user data, never overwritten)
 #   install-manifest.json - version, date, installed file list + sha256
@@ -294,10 +294,10 @@ install_managed_file() { # <src> <relpath>
   mv -f "$stage" "$RUNTIME_ROOT/$rel"
 }
 
-# bin/ — memory-lifecycle.sh, repo-bootstrap.sh, verify-permission-patterns.sh, test suites
+# bin/ — memory-lifecycle.sh, repo-bootstrap.sh, verify-permission-patterns.sh, state.sh, test suites
 BIN_SRC_DIR="$ROOT/scripts"
 mkdir -p "$RUNTIME_ROOT/bin"
-for s in memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh \
+for s in memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh state.sh \
          test-install.sh test-runtime.sh test-path-resolution.sh test-memory-isolation.sh \
          test-agent-architecture.sh test-memory-system.sh test-repo-bootstrap.sh test-integration.sh; do
   if [ -f "$BIN_SRC_DIR/$s" ]; then
@@ -369,7 +369,7 @@ VERSION="1.0.0"
     first=0
   done
   # runtime managed files
-  for s in memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh; do
+  for s in memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh state.sh; do
     rp="bin/$s"
     if [ -f "$RUNTIME_ROOT/$rp" ]; then
       chk="$(sha256sum "$RUNTIME_ROOT/$rp" 2>/dev/null | awk '{print $1}' || echo 'unknown')"

@@ -208,7 +208,7 @@ fi
 # TEST 14: state separation (context management) documented
 # ======================================================================== #
 if assert_contains "$ORCH" "repository knowledge  → .opencode/ skills" \
-   && assert_contains "$ORCH" "task state            → AgentsReport/" \
+   && assert_contains "$ORCH" "task state            → .tasks/<goal>/tasks.json" \
    && assert_contains "$ORCH" "scratch               → /tmp/opencode"; then
   ok "T14 context/state separation documented"
 else

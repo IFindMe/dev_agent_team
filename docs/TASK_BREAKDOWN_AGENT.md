@@ -44,7 +44,8 @@ implementation (→ Builder), or the verification (→ Tester/Reviewer).
 ├── 00-overview.md     # the plan: ordered task list, one line each: description + depends-on + responsible role hint
 ├── 01-<slug>.md       # task 1 — self-contained: objective, scope, depends-on, inputs, expected output, verification, out-of-scope
 ├── 02-<slug>.md       # task 2
-└── NN-<slug>.md       # last task (zero-padded 2-digit ascending: 01, 02, …; 00 reserved for overview)
+├── NN-<slug>.md       # last task (zero-padded 2-digit ascending: 01, 02, …; 00 reserved for overview)
+└── tasks.json         # machine task state — one record per task, 7-state status (§ 4)
 ```
 
 - **README.md** — goal statement, how to read the breakdown, pointer to
@@ -56,27 +57,64 @@ implementation (→ Builder), or the verification (→ Tester/Reviewer).
 - **NN-<slug>.md** — one self-contained file per task: objective, scope,
   depends-on, inputs, expected output, verification, out-of-scope. An agent
   executing `03-<slug>.md` should not need the original goal prompt.
-- **flag.json** — the machine-readable planning state (§ 4).
+- **tasks.json** — the machine-readable task state: one record per task with a
+  7-state status; the authoritative per-goal task state, enforced by
+  `scripts/state.sh` (§ 4).
+- **flag.json** — legacy planning state, optional; pre-migration trees only
+  (§ 4).
 
-## 4. `flag.json` — planning state (verbatim format)
+## 4. Machine task state — `tasks.json` (authoritative) + legacy `flag.json`
 
-The compact verbatim format is normative:
+### `tasks.json` — authoritative per-goal machine task state
 
-```json
-{"goal":"<goal-name>","status":"pending|in-progress|done","tasks":{"01":"pending","02":"in-progress",...}}
-```
-
-The same contract, expanded:
+Task status lives in `.tasks/<goal>/tasks.json` — the authoritative
+machine-readable task state for the goal, enforced by `scripts/state.sh`
+(installed to runtime as `bin/state.sh`). NEVER parse Markdown for task status;
+status comes from `tasks.json` only.
 
 ```json
 {
+  "version": 1,
   "goal": "<goal-name>",
-  "status": "pending",
   "tasks": {
-    "01": "pending",
-    "02": "in-progress"
+    "01": {
+      "title": "<concise objective>",
+      "description": "<scope / required output>",
+      "status": "pending",
+      "priority": "normal",
+      "assigned_to": null,
+      "dependencies": [],
+      "created_at": "2026-09-13T02:00:00Z",
+      "updated_at": "2026-09-13T02:00:00Z",
+      "started_at": null,
+      "completed_at": null
+    }
   }
 }
+```
+
+- Top-level keys are exactly `version` (int, = 1), `goal` (string ==
+  `<goal-name>`), `tasks` (object). The task id is the **map key**, not a field
+  inside the record.
+- Per-task fields — the goal's full 11-field set: `id` (map key),
+  `title`, `description`, `status`, `priority`, `assigned_to`, `dependencies`,
+  `created_at`, `updated_at`, `started_at`, `completed_at`.
+- `status` ∈ the 7-state enum verbatim:
+  `pending | assigned | in_progress | blocked | completed | failed | cancelled`.
+- `status` is **machine-owned**: changed only via sanctioned transitions through
+  `scripts/state.sh` — never by hand-editing JSON, never parsed from Markdown.
+  The tree itself stays Markdown (`README.md`, `00-overview.md`, `NN-*.md`);
+  only machine state is JSON.
+
+### `flag.json` — legacy planning state (verbatim format, compat note)
+
+Pre-migration trees may keep the old verbatim format. It is **NOT
+authoritative**, is not written for new goals, and its statuses map lossily to
+the new enum: `pending→pending`, `in-progress→in_progress`, `done→completed`.
+Remove it and port statuses into `tasks.json` on the next re-plan of that goal.
+
+```json
+{"goal":"<goal-name>","status":"pending|in-progress|done","tasks":{"01":"pending","02":"in-progress",...}}
 ```
 
 - Keys: `goal` (string, must equal `<goal-name>`), `status` (one of
@@ -84,6 +122,10 @@ The same contract, expanded:
   number to one of `pending|in-progress|done`).
 - State meanings: `pending` = not started; `in-progress` = selected / dispatch
   active; `done` = verified complete.
+
+Path summary, `state.sh` subcommands, the 7-state list, and the derived
+`.tasks/agents.json` / `.tasks/sessions.json` / `.tasks/events.jsonl` surfaces:
+[docs/OPERATIONS_REFERENCE.md §6 Machine state & JSON](OPERATIONS_REFERENCE.md#6-machine-state--json-reference).
 
 ## 5. Dependency ordering
 
@@ -93,7 +135,7 @@ The same contract, expanded:
   tasks append with the next free number; a removed task leaves a gap noted in
   `00-overview.md` (numbers are never silently reused).
 - The **next executable task** is the first `pending` task whose `depends-on`
-  are all `done`.
+  are all `completed`.
 
 ## 6. Workflow rules
 
@@ -108,33 +150,39 @@ analyze → break-down → create → verify deps → implement
    files at the smallest valid granularity that keeps each task to one coherent
    unit.
 3. **create** — scaffold `.tasks/<goal-name>/`: `README.md`, `00-overview.md`,
-   one file per numbered task, `flag.json` with all tasks `pending` and goal
-   `status: pending`.
+   one file per numbered task, and `tasks.json` with all tasks `pending`
+   (structural fields only; § 7).
 4. **verify deps** — run the validation invariant (§ 10) against the tree;
    confirm each task's `depends-on` are satisfied by earlier tasks; identify the
    next executable task.
 5. **implement** — hands off: the Orchestrator reads the breakdown and
    dispatches specialists per task; `breakdowner` does not implement.
 
-**Per-task lifecycle** — `pending → in-progress → done`, with verification
-before `done`:
+**Per-task lifecycle** — 7-state status in `tasks.json`, flipped only by the
+Orchestrator through `scripts/state.sh` (`task status <NN> <status>`), with
+verification before `completed`:
 
 - `pending` — not started.
-- `in-progress` — the Orchestrator records this when it dispatches the task.
-- `done` — set by the Orchestrator ONLY with verified-completion evidence, never
-  by the implementing agent. Implementers report completion to the Orchestrator;
-  they never self-flag `done`.
+- `assigned` — named in `assigned_to`; work has not started.
+- `in_progress` — the Orchestrator records the dispatch flip
+  (`state.sh task status <NN> in_progress`) when it dispatches the task.
+- `blocked` / `failed` / `cancelled` — pause / terminal-failure / terminal-discard.
+- `completed` — set by the Orchestrator ONLY with verified-completion evidence,
+  never by the implementing agent. Implementers report completion to the
+  Orchestrator; they never self-flip `completed`.
 
 **Next-task selection** — during create and re-plan, `breakdowner` reports the
-next executable task (first `pending` task whose `depends-on` are all `done`);
-actual dispatch selection belongs to the Orchestrator.
+next executable task (first `pending` task whose `depends-on` are all
+`completed`); actual dispatch selection belongs to the Orchestrator.
 
-**Living plan** — the tree is the single source of truth for task structure.
-Re-planning that changes structure (split, merge, add, rescope, invalidate)
-returns to `breakdowner`, which updates the affected task files +
-`00-overview.md` + `flag.json` in one pass. During another agent's execution,
-`.tasks/` is never mutated except through this route or the Orchestrator's two
-execution flips.
+**Living plan** — the tree is the single source of truth for task structure
+(Markdown files) and task state (`tasks.json`). Re-planning that changes
+structure (split, merge, add, rescope, invalidate) returns to `breakdowner`,
+which updates the affected task files + `00-overview.md` + `tasks.json`
+(structural fields) in one pass. During another agent's execution, `.tasks/` is
+never mutated except through this route or the Orchestrator's two execution
+flips (`task status <NN> in_progress` at dispatch; `task status <NN> completed`
+on verified completion — both via `state.sh`).
 
 **Never delete history** — the breakdown is never wholesale rewritten: task
 numbers are appended, not renumbered; removed tasks leave noted gaps; prior task
@@ -145,13 +193,17 @@ auditable.
 
 | Who | May read | May write |
 |-----|----------|-----------|
-| Breakdowner | yes (owns) | **YES — the only author of task structure + planning/re-planning state** |
-| Orchestrator | yes | `flag.json` execution flips ONLY: set task `in-progress` at dispatch; set task `done` only with verified-completion evidence; never edits task files / overview |
+| Breakdowner | yes (owns) | **YES — the only author of task structure + planning/re-planning state** (in `tasks.json`: structural fields only — `title`, `description`, `dependencies`, `priority` — at CREATE/UPDATE) |
+| Orchestrator | yes | `tasks.json` execution flips ONLY via `state.sh`: `task status <NN> in_progress` at dispatch; `task status <NN> completed` only with verified-completion evidence; never edits task files / overview / structural fields |
 | Workflow Architect | yes (reads README/overview/task files as input) | no — writes its model only in `AgentsReport/workflow-architect/` |
-| Builder / Tester / Reviewer / all other agents | yes | no — implementers never self-flag `done`; they report completion to the Orchestrator |
+| Builder / Tester / Reviewer / all other agents | yes | no — implementers never self-flag `completed`; they report completion to the Orchestrator |
+| state tool (`scripts/state.sh`) | yes | machine-state files ONLY: `.tasks/agents.json` (derived roster), `.tasks/sessions.json` (derived cursor), `.tasks/events.jsonl` (append-only log) — tool-owned, not planning state |
 
 Rule: any `.tasks/` mutation that is not one of the Orchestrator's two
-execution flips is a re-plan and must be performed by `breakdowner`.
+execution flips (which run through `state.sh` into `tasks.json`) is a re-plan
+and must be performed by `breakdowner`. Machine-state files
+(`.tasks/agents.json`, `.tasks/sessions.json`, `.tasks/events.jsonl`) are
+tool-owned, not Breakdowner planning state.
 
 ## 8. Trigger summary
 
@@ -202,7 +254,9 @@ self-serve]` report instead of inventing structure.
    line each), `depends-on`, responsible-role hint.
 3. `.tasks/<goal-name>/NN-<slug>.md` (01…NN, zero-padded, 00 reserved) — one
    self-contained file per task.
-4. `.tasks/<goal-name>/flag.json` — verbatim format (§ 4).
+4. `.tasks/<goal-name>/tasks.json` — machine task state, every task `pending`
+   (structural fields only; § 4). Legacy `flag.json` only for pre-migration
+   re-plans (compat note, § 4).
 5. `AgentsReport/breakdowner/<YYYY-MM-DD>_<goal>.md` — TL;DR (≤10 lines) +
    `## Decision N:` sections ending `[DONE]/[PENDING]/[BLOCKED]`.
 
@@ -210,14 +264,17 @@ self-serve]` report instead of inventing structure.
 
 For the tree `.tasks/<goal-name>/`, all six must hold:
 
-1. `README.md`, `00-overview.md`, and `flag.json` all exist.
-2. `flag.json` parses as JSON and has exactly the keys `goal`, `status`,
-   `tasks`.
-3. `flag.json.goal == "<goal-name>"`; `flag.json.status ∈ {pending, in-progress,
-   done}`; every value of `flag.json.tasks ∈ {pending, in-progress, done}`.
-4. The set of keys of `flag.json.tasks` equals the set of zero-padded numbers
-   `NN` of existing files `NN-*.md` in the directory (no orphans, no missing
-   files).
+1. `README.md`, `00-overview.md`, and `tasks.json` all exist (`flag.json` not
+   required; optional legacy in pre-migration trees).
+2. `tasks.json` parses as JSON and has exactly the top-level keys `version`,
+   `goal`, `tasks`.
+3. `tasks.json.goal == "<goal-name>"`.
+4. Every `tasks` record's `status` ∈ {pending, assigned, in_progress, blocked,
+   completed, failed, cancelled}; each record's keys ⊆ {title, description,
+   status, priority, assigned_to, dependencies, created_at, updated_at,
+   started_at, completed_at}; the set of `tasks` map keys equals the set of
+   zero-padded numbers `NN` of existing files `NN-*.md` in the directory (no
+   orphans, no missing).
 5. `00-overview.md` lists every numbered task `01…NN`; each listed task has a
    corresponding file on disk.
 6. Task numbers are zero-padded ascending with no non-removal gaps; at least one

@@ -1,0 +1,2 @@
+# 2026-09-13 state-json-migration decomposition decision
+Task-decomposition decision: for anchor-mutation migrations, keep prompts (mutate) and tests (re-green) as SEPARATE tasks so the deliberate RED window is visible and coordinated by one Architect mutation plan; sessions Markdown Status parse is pinned by I02 so coexistence/migration must be an explicit Architect decision; tooling task must exist before prompt adaptation so prompts cite real CLI commands.
