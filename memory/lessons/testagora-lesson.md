@@ -1,0 +1,2 @@
+# Lesson: hermetic CLI-suite fixtures beat live-seed pins
+Pinning live append-only DAG values (ids/scores/counts) in tests false-fails on legitimate growth (test-agora 43/45: T15 S=21 vs S=2, T17 tip absent after valid 3->5 publishes). Fix: build the asserted graph in isolated /tmp AGORA_DIR with fixed --ts/--by publishes and assert fixture vars; replace whole-file sha-pins with verify-OK + append-only prefix check.

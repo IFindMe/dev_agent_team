@@ -367,7 +367,7 @@ cmd_task_deps() {
   require_task "$goal" "$id"
   new_json="$(jq -cn '$ARGS.positional' --args "${newdeps[@]}")"
   added_json="$(jq -c --arg id "$id" --argjson new "$new_json" \
-    '. as $root | [ $new[] | select(($root.tasks[$id].dependencies // [] | index(.)) == null) ]' "$f")"
+    '. as $root | [ $new[] as $d | select(($root.tasks[$id].dependencies // [] | index($d)) == null) ]' "$f")"
   missing_json="$(jq -c --argjson new "$new_json" \
     '. as $root | [ $new[] | select($root.tasks[.]? == null) ]' "$f")"
   if [ "$(jq -r 'length' <<<"$added_json")" = "0" ]; then

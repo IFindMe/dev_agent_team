@@ -62,11 +62,11 @@ if assert_dir "$BIN_RUNTIME" \
    && assert_file "$BIN_RUNTIME/repo-bootstrap.sh" \
    && assert_file "$BIN_RUNTIME/verify-permission-patterns.sh" \
    && assert_dir "$RUNTIME/skills" \
-   && [ "$(find "$RUNTIME/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "12" ] \
+   && [ "$(find "$RUNTIME/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "13" ] \
    && assert_file "$RUNTIME/skills/SKILLS.md" \
    && assert_dir "$RUNTIME/improvements" \
    && assert_file "$RUNTIME/install-manifest.json"; then
-  ok "T01 install.sh installs runtime tree (bin/ memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh, skills 12+SKILLS.md, improvements, manifest)"
+  ok "T01 install.sh installs runtime tree (bin/ memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh, skills 13+SKILLS.md, improvements, manifest)"
 else
   fail "T01 install.sh installs full runtime tree" "missing runtime artifacts under $RUNTIME (install output: $INST_OUT)"
 fi

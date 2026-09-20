@@ -90,7 +90,7 @@ role — that would break the dedicated-agent routing this team depends on. If a
 specialist is not registered or fails to load, report the workflow as BLOCKED
 with the missing agent named — do not improvise a substitute.
 
-Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (12 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
+Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (13 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
 
 Environment and setup facts (agent-definition config paths, staging copy sync, no hot-reload, `opencode agent list` re-verify after edits, runtime-tree layout): docs/OPERATIONS_REFERENCE.md §Environment and Setup — read when installing, editing agent definitions, or verifying the roster.
 
@@ -166,7 +166,7 @@ Storage rules (canonical):
 
 ### Skills System
 
-Skills are reusable, specialized capabilities that agents load when needed. They live in `skills/` at the repository root — index: skills/SKILLS.md (12 capabilities: tdd, systematic-debugging, architecture-design, code-review, security-review, repository-analysis, failure-analysis, refactoring, test-analysis, incident-investigation, browser-automation, research).
+Skills are reusable, specialized capabilities that agents load when needed. They live in `skills/` at the repository root — index: skills/SKILLS.md (13 capabilities: tdd, systematic-debugging, architecture-design, code-review, security-review, repository-analysis, failure-analysis, refactoring, test-analysis, incident-investigation, browser-automation, research, verification-loop).
 
 #### Skill Loading
 
@@ -183,7 +183,7 @@ Skills are reusable, specialized capabilities that agents load when needed. They
 | Detective | systematic-debugging, failure-analysis | incident-investigation |
 | Architect | architecture-design | code-review, security-review |
 | Builder | tdd, refactoring | code-review |
-| Tester | tdd, test-analysis | failure-analysis |
+| Tester | tdd, test-analysis, verification-loop | failure-analysis |
 | Reviewer | code-review, security-review | test-analysis, architecture-design |
 | Maintainer | refactoring | code-review |
 | Toolsmith | systematic-debugging | — |

@@ -33,7 +33,9 @@ skills/
 │   └── SKILL.md
 ├── browser-automation/          # Browser automation patterns
 │   └── SKILL.md
-└── research/                    # Research methodology
+├── research/                    # Research methodology
+│   └── SKILL.md
+└── verification-loop/           # Pre-PR verification methodology
     └── SKILL.md
 ```
 
@@ -75,7 +77,7 @@ prerequisites: <what must be true before using this skill>
 | Detective | systematic-debugging, failure-analysis | incident-investigation |
 | Architect | architecture-design | code-review, security-review |
 | Builder | tdd, refactoring | code-review |
-| Tester | tdd, test-analysis | failure-analysis |
+| Tester | tdd, test-analysis, verification-loop | failure-analysis |
 | Reviewer | code-review, security-review | test-analysis, architecture-design |
 | Maintainer | refactoring | code-review |
 | Toolsmith | systematic-debugging | — |

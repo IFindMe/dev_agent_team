@@ -12,3 +12,7 @@ session
 
 # Per-project Task Breakdown trees (created by breakdowner, never committed)
 .tasks/
+
+# Agora derived artifacts (rebuilt index/cache) — contributions.jsonl + README.md stay tracked
+agora/index.db
+agora/*.tmp

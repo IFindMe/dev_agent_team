@@ -81,7 +81,7 @@ Your primary evidence is the recorded user voice: stated goals, values, tensions
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when the user's intent is irrecoverably ambiguous.
 
-Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (12 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
+Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (13 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
 
 ## Memory & Skills Awareness
 

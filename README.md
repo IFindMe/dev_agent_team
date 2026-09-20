@@ -51,7 +51,7 @@ decisions, lessons, failures, architecture notes, and session state. A
 lifecycle script (`scripts/memory-lifecycle.sh`) provides deterministic recall,
 store, list, search, and cleanup operations.
 
-The team also includes **12 reusable skills** (`skills/`) — specialized
+The team also includes **13 reusable skills** (`skills/`) — specialized
 methodologies for TDD, debugging, architecture, code review, security review,
 and more. Agents load relevant skills when dispatched.
 
@@ -73,7 +73,7 @@ dev_agent_team/
 │   ├── failures/                      # root causes + prevention
 │   ├── architecture/                  # system structure documentation
 │   └── sessions/                      # work-in-progress state
-├── skills/                            # 12 reusable specialized methodologies
+├── skills/                            # 13 reusable specialized methodologies
 │   ├── SKILLS.md                      # index with loading rules
 │   ├── tdd/SKILL.md                   # Test-Driven Development
 │   ├── systematic-debugging/SKILL.md  # debugging methodology
@@ -86,7 +86,8 @@ dev_agent_team/
 │   ├── test-analysis/SKILL.md         # test quality assessment
 │   ├── incident-investigation/SKILL.md # production incidents
 │   ├── browser-automation/SKILL.md    # web interaction patterns
-│   └── research/SKILL.md              # information gathering
+│   ├── research/SKILL.md              # information gathering
+│   └── verification-loop/SKILL.md     # Pre-PR verification methodology
 ├── improvements/                      # proposal-based improvement system
 │   ├── README.md                      # proposal format and lifecycle
 │   ├── pending/                       # proposals awaiting approval
@@ -128,7 +129,7 @@ OPENCODE_AGENTS_DIR=/path/to/opencode/agents ./scripts/install.sh
 ```
 
 The installer also installs the **self-contained runtime tree** (scripts `bin/`,
-12 general-purpose skills `skills/`, improvements store, and an
+13 general-purpose skills `skills/`, improvements store, and an
 `install-manifest.json`) under `$OPENCODE_DEV_AGENT_TEAM` (default
 `$XDG_CONFIG_HOME/opencode/dev-agent-team`, fallback
 `~/.config/opencode/dev-agent-team`). After installation the source checkout may

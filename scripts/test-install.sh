@@ -4,7 +4,7 @@ set -uo pipefail
 # test-install.sh — Verify the installer installs a working runtime and is
 # idempotent (parent D9 proofs 1 and 2).
 #   1. install works: temp HOME + temp source; run install; assert 14 agents,
-#      runtime bin/ executables, skills 12+SKILLS.md, improvements scaffold,
+#      runtime bin/ executables, skills 13+SKILLS.md, improvements scaffold,
 #      manifest, and shell-rc export present.
 #   2. install idempotent: second run produces byte-identical agents, single
 #      manifest, backup stamps grow, KEEP_BACKUPS honored.
@@ -66,20 +66,22 @@ fi
 # ======================================================================== #
 if [ -x "$RUNTIME/bin/memory-lifecycle.sh" ] \
    && [ -x "$RUNTIME/bin/repo-bootstrap.sh" ] \
-   && [ -x "$RUNTIME/bin/verify-permission-patterns.sh" ]; then
-  ok "T02 runtime bin/ has executable memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh"
+   && [ -x "$RUNTIME/bin/verify-permission-patterns.sh" ] \
+   && [ -x "$RUNTIME/bin/agora.sh" ] \
+   && [ -x "$RUNTIME/bin/test-agora.sh" ]; then
+  ok "T02 runtime bin/ has executable memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh agora.sh test-agora.sh"
 else
   fail "T02 runtime bin/ executables present" "missing/all non-executable in $RUNTIME/bin"
 fi
 
 # ======================================================================== #
-# TEST T03: runtime skills 12 dirs + SKILLS.md installed
+# TEST T03: runtime skills 13 dirs + SKILLS.md installed
 # ======================================================================== #
 N_SK="$(find "$RUNTIME/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)"
-if [ "$N_SK" = "12" ] && assert_file "$RUNTIME/skills/SKILLS.md"; then
-  ok "T03 runtime skills/ has 12 skill dirs + SKILLS.md"
+if [ "$N_SK" = "13" ] && assert_file "$RUNTIME/skills/SKILLS.md"; then
+  ok "T03 runtime skills/ has 13 skill dirs + SKILLS.md"
 else
-  fail "T03 runtime skills installed" "dirs=$N_SK (want 12), SKILLS.md=$([ -f "$RUNTIME/skills/SKILLS.md" ] && echo present || echo MISSING)"
+  fail "T03 runtime skills installed" "dirs=$N_SK (want 13), SKILLS.md=$([ -f "$RUNTIME/skills/SKILLS.md" ] && echo present || echo MISSING)"
 fi
 
 # ======================================================================== #

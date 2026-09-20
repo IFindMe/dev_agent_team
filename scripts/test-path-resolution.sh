@@ -4,7 +4,7 @@ set -uo pipefail
 # test-path-resolution.sh — Verify runtime path resolution for agents, skills,
 # and improvements. Proves (parent D9 proof 6 + 9):
 #   6. all 14 prompts contain the canonical runtime sentence; runtime skills/
-#      has 12 SKILL.md with required frontmatter; sampling read via resolved path.
+#      has 13 SKILL.md with required frontmatter; sampling read via resolved path.
 #   9. runtime improvements/ scaffold + proposal-file flow; existing
 #      test-agent-architecture checks re-run against installed prompts.
 #
@@ -25,7 +25,7 @@ RUNTIME="${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"
 # Allow test to point at a runtime explicitly (e.g. environment variable RUNTIME_ROOT).
 RUNTIME="${RUNTIME_ROOT:-$RUNTIME}"
 
-CANONICAL='Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (12 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.'
+CANONICAL='Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (13 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.'
 
 PASS=0; FAIL=0
 T="$(mktemp -d)"
@@ -56,9 +56,9 @@ else
 fi
 
 # ======================================================================== #
-# TEST T02: runtime skills/ has 12 SKILL.md with required frontmatter
+# TEST T02: runtime skills/ has 13 SKILL.md with required frontmatter
 # ======================================================================== #
-# When run against the repo checkout, skills live at TEAM_ROOT/skills (12 dirs +
+# When run against the repo checkout, skills live at TEAM_ROOT/skills (13 dirs +
 # SKILLS.md). When run against an installed runtime, they live at RUNTIME/skills.
 RSKILLS="$SKILLS"
 [ -d "$RUNTIME/skills" ] && RSKILLS="$RUNTIME/skills"
@@ -74,10 +74,10 @@ for d in "$RSKILLS"/*/; do
   head -10 "$f" | grep -q "^version:" || FRONT_OK=0
   head -10 "$f" | grep -q "^owner:" || FRONT_OK=0
 done
-if [ "$COUNT" = "12" ] && [ "$FRONT_OK" = "1" ] && assert_file "$RSKILLS/SKILLS.md"; then
-  ok "T02 runtime skills has 12 SKILL.md with required frontmatter + SKILLS.md"
+if [ "$COUNT" = "13" ] && [ "$FRONT_OK" = "1" ] && assert_file "$RSKILLS/SKILLS.md"; then
+  ok "T02 runtime skills has 13 SKILL.md with required frontmatter + SKILLS.md"
 else
-  fail "T02 runtime skills has 12 SKILL.md" "count=$COUNT front_ok=$FRONT_OK"
+  fail "T02 runtime skills has 13 SKILL.md" "count=$COUNT front_ok=$FRONT_OK"
 fi
 
 # ======================================================================== #
@@ -189,7 +189,7 @@ else
 fi
 
 # ======================================================================== #
-# TEST T10: 12-skill layer references resolve to runtime skills path
+# TEST T10: 13-skill layer references resolve to runtime skills path
 # ======================================================================== #
 # The general-purpose skills must be documented as living under the runtime
 # skills/ dir (env-resolved), not bare CWD-relative 'skills/'.

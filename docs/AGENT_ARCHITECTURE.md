@@ -29,7 +29,7 @@ architecture documented in
 | Repository knowledge | bootstrap + skills | unchanged structure + **knowledge lifecycle** rules (discover → classify → identify owner → update only the relevant doc → preserve valid content) |
 | Agent roster | 13 agents | **now exactly 14 agents** (1 orchestrator primary + 13 subagents); one new role (`breakdowner`) added |
 | Project memory | — | **deterministic cross-session memory** in `memory/` (decisions, lessons, failures, architecture, sessions) with lifecycle script |
-| Skills | — | **12 reusable specialized methodologies** in `skills/` loaded by agents when needed |
+| Skills | — | **13 reusable specialized methodologies** in `skills/` loaded by agents when needed |
 | Improvements | — | **proposal-based improvement system** in `improvements/` requiring human approval |
 
 ## 2. Orchestrator decision loop
