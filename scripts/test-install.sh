@@ -75,13 +75,13 @@ else
 fi
 
 # ======================================================================== #
-# TEST T03: runtime skills 13 dirs + SKILLS.md installed
+# TEST T03: runtime skills 18 dirs + SKILLS.md installed
 # ======================================================================== #
 N_SK="$(find "$RUNTIME/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)"
-if [ "$N_SK" = "13" ] && assert_file "$RUNTIME/skills/SKILLS.md"; then
-  ok "T03 runtime skills/ has 13 skill dirs + SKILLS.md"
+if [ "$N_SK" = "18" ] && assert_file "$RUNTIME/skills/SKILLS.md"; then
+  ok "T03 runtime skills/ has 18 skill dirs + SKILLS.md"
 else
-  fail "T03 runtime skills installed" "dirs=$N_SK (want 13), SKILLS.md=$([ -f "$RUNTIME/skills/SKILLS.md" ] && echo present || echo MISSING)"
+  fail "T03 runtime skills installed" "dirs=$N_SK (want 18), SKILLS.md=$([ -f "$RUNTIME/skills/SKILLS.md" ] && echo present || echo MISSING)"
 fi
 
 # ======================================================================== #

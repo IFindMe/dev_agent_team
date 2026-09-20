@@ -12,7 +12,7 @@ TEAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VERBOSE=0
 [ "${1:-}" = "--verbose" ] && VERBOSE=1
 
-SUITES=(test-agent-architecture test-memory-system test-repo-bootstrap test-integration test-install test-runtime test-path-resolution test-memory-isolation)
+SUITES=(test-agent-architecture test-memory-system test-repo-bootstrap test-integration test-install test-runtime test-path-resolution test-memory-isolation test-adr test-impact test-arch-overview test-deadcode test-sessions)
 
 BOLD=""
 RESET=""

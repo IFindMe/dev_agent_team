@@ -35,7 +35,17 @@ skills/
 │   └── SKILL.md
 ├── research/                    # Research methodology
 │   └── SKILL.md
-└── verification-loop/           # Pre-PR verification methodology
+├── adr-management/              # ADR management with section-level CRUD
+│   └── SKILL.md
+├── arch-overview/               # Architecture overview generation
+│   └── SKILL.md
+├── verification-loop/           # Pre-PR verification methodology
+│   └── SKILL.md
+├── impact-analysis/             # Blast-radius analysis for code changes
+│   └── SKILL.md
+├── deadcode-detection/          # Dead code and orphaned symbol detection
+│   └── SKILL.md
+└── session-coordination/        # Multi-agent session coordination, file locks, conflict detection
     └── SKILL.md
 ```
 
@@ -73,14 +83,14 @@ prerequisites: <what must be true before using this skill>
 
 | Agent | Primary Skills | Optional Skills |
 |-------|---------------|-----------------|
-| Explorer | repository-analysis, research | browser-automation |
+| Explorer | repository-analysis, research, arch-overview | browser-automation |
 | Detective | systematic-debugging, failure-analysis | incident-investigation |
 | Architect | architecture-design | code-review, security-review |
 | Builder | tdd, refactoring | code-review |
 | Tester | tdd, test-analysis, verification-loop | failure-analysis |
 | Reviewer | code-review, security-review | test-analysis, architecture-design |
 | Maintainer | refactoring | code-review |
-| Toolsmith | systematic-debugging | — |
+| Toolsmith | systematic-debugging, impact-analysis, session-coordination | adr-management |
 | Designer | — | research, browser-automation |
 | Philosopher | — | research |
 | Writer | — | research |

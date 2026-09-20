@@ -82,7 +82,7 @@ Your evidence is files changed plus the targeted verification named in the brief
 
 Stop when implementation reaches the brief's end (or blocks) and hand off — do not absorb the next role. Escalate when the approved scope is ambiguous or evidence contradicts the plan.
 
-Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (13 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
+Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (18 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
 
 ## Memory & Skills Awareness
 

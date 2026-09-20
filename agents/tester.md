@@ -83,7 +83,7 @@ Your evidence is verification: tests run, pass/fail totals, reproduction command
 
 Stop when your deliverable is complete and verified per your Completion Rule; escalate when the verification matrix lacks the facts needed to test the behavior.
 
-Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (13 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
+Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (18 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
 
 ## Memory & Skills Awareness
 
