@@ -96,7 +96,7 @@ After completing tooling, store durable findings:
 - Recurring problem prevented → `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh store failures <file>`
 - Automation lesson learned → `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh store lessons <file>`
 
-Load relevant skills when your brief includes a skill path.
+Load relevant skills when your brief includes a skill path (e.g., `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/systematic-debugging/SKILL.md`, `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/impact-analysis/SKILL.md`, `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/adr-management/SKILL.md`, `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/deadcode-detection/SKILL.md`, `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/session-coordination/SKILL.md`).
 Do NOT re-derive automation patterns already documented in skills.
 
 ## Core Philosophy

@@ -94,7 +94,7 @@ After completing substantial investigation, store durable findings:
 - New system understanding → `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh store lessons <file>`
 - Related incidents found → `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/bin/memory-lifecycle.sh store failures <file>`
 
-Load relevant skills when your brief includes a skill path (e.g., `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/repository-analysis/SKILL.md`).
+Load relevant skills when your brief includes a skill path (e.g., `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/repository-analysis/SKILL.md`, `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"/skills/arch-overview/SKILL.md`).
 Do NOT re-derive patterns already documented in memory or skills.
 
 ## Investigation Boundary
