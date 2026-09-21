@@ -7,12 +7,13 @@ set -euo pipefail
 # The runtime tree is installed under $OPENCODE_DEV_AGENT_TEAM (default
 # $XDG_CONFIG_HOME/opencode/dev-agent-team, fallback ~/.config/opencode/dev-agent-team):
 #   bin/            - memory-lifecycle.sh, repo-bootstrap.sh, verify-permission-patterns.sh, state.sh, agora.sh, test suites
-#   skills/         - 13 general-purpose skills + SKILLS.md (managed, read-only)
+#   skills/         - 18 general-purpose skills + SKILLS.md (managed, read-only)
 #   improvements/   - README (only if absent) + pending/applied/rejected (user data, never overwritten)
 #   install-manifest.json - version, date, installed file list + sha256
 #
 # Usage:
 #   ./scripts/install.sh                # install runtime tree (agents + runtime)
+#   ./scripts/install.sh --local        # install to .opencode/ in current directory (project-scoped)
 #   ./scripts/install.sh --uninstall    # remove manifest-tracked install
 #   ./scripts/install.sh --uninstall --purge   # also remove improvements/ user data
 #   ./scripts/install.sh --migrate      # import pending improvement proposals (no-op today)
@@ -22,21 +23,10 @@ set -euo pipefail
 # Override runtime root with: OPENCODE_DEV_AGENT_TEAM=/some/runtime
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TARGET="${OPENCODE_AGENTS_DIR:-$HOME/.config/opencode/agents}"
 EXPECTED_COUNT=14
 KEEP_BACKUPS=5
 
-# Runtime root resolution (D3/D8): env var first, then XDG_CONFIG_HOME, then
-# ~/.config/opencode/dev-agent-team.
-if [ -n "${OPENCODE_DEV_AGENT_TEAM:-}" ]; then
-  RUNTIME_ROOT="$OPENCODE_DEV_AGENT_TEAM"
-elif [ -n "${XDG_CONFIG_HOME:-}" ]; then
-  RUNTIME_ROOT="$XDG_CONFIG_HOME/opencode/dev-agent-team"
-else
-  RUNTIME_ROOT="$HOME/.config/opencode/dev-agent-team"
-fi
-
-MANIFEST="$RUNTIME_ROOT/install-manifest.json"
+MANIFEST=""  # set after RUNTIME_ROOT resolution
 STAMP="$(date +%Y%m%d_%H%M%S)_$$"
 
 log() { echo "==> $*"; }
@@ -45,7 +35,7 @@ log() { echo "==> $*"; }
 # Usage / flags
 # --------------------------------------------------------------------- #
 usage() {
-  sed -n '2,30p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,23p' "$0" | sed 's/^# \{0,1\}//'
   exit 2
 }
 
@@ -53,6 +43,7 @@ SELF_TEST=0
 UNINSTALL=0
 PURGE=0
 MIGRATE=0
+LOCAL=0
 
 for arg in "$@"; do
   case "$arg" in
@@ -60,10 +51,51 @@ for arg in "$@"; do
     --purge)     PURGE=1 ;;
     --migrate)   MIGRATE=1 ;;
     --self-test) SELF_TEST=1 ;;
+    --local)     LOCAL=1 ;;
     -h|--help)   usage ;;
     *)           echo "ERROR: unknown option: $arg" >&2; usage ;;
   esac
 done
+
+# --------------------------------------------------------------------- #
+# Local install mode (--local): install to .opencode/ in current directory
+# --------------------------------------------------------------------- #
+LOCAL_ROOT=""
+LOCAL_TARGET=""
+if [ "$LOCAL" = "1" ]; then
+  LOCAL_ROOT="$(pwd)/.opencode/dev-agent-team"
+  LOCAL_TARGET="$(pwd)/.opencode/agents"
+  log "Local install mode (--local)"
+  log "Runtime:     $LOCAL_ROOT"
+  log "Agents:      $LOCAL_TARGET"
+  log ""
+  log "To use, set OPENCODE_DEV_AGENT_TEAM in your shell:"
+  log "  export OPENCODE_DEV_AGENT_TEAM=\"$LOCAL_ROOT\""
+  log ""
+  log "Or add to your project's .env or .bashrc:"
+  log "  export OPENCODE_DEV_AGENT_TEAM=\"$LOCAL_ROOT\""
+  log ""
+fi
+
+# Target resolution: OPENCODE_AGENTS_DIR env var, or local mode, or global default.
+TARGET="${OPENCODE_AGENTS_DIR:-$HOME/.config/opencode/agents}"
+if [ "$LOCAL" = "1" ]; then
+  TARGET="$LOCAL_TARGET"
+fi
+
+# Runtime root resolution (D3/D8): env var first, then local mode, then XDG_CONFIG_HOME, then
+# ~/.config/opencode/dev-agent-team.
+if [ -n "${OPENCODE_DEV_AGENT_TEAM:-}" ]; then
+  RUNTIME_ROOT="$OPENCODE_DEV_AGENT_TEAM"
+elif [ "$LOCAL" = "1" ]; then
+  RUNTIME_ROOT="$LOCAL_ROOT"
+elif [ -n "${XDG_CONFIG_HOME:-}" ]; then
+  RUNTIME_ROOT="$XDG_CONFIG_HOME/opencode/dev-agent-team"
+else
+  RUNTIME_ROOT="$HOME/.config/opencode/dev-agent-team"
+fi
+
+MANIFEST="$RUNTIME_ROOT/install-manifest.json"
 
 # --------------------------------------------------------------------- #
 # Uninstall (D9)
@@ -131,18 +163,23 @@ if [ "$UNINSTALL" = "1" ]; then
   fi
 
   # Ask before removing the rc export line (it may be shared).
-  RC_FILE=""
-  [ -f "$HOME/.bashrc" ] && RC_FILE="$HOME/.bashrc"
-  [ -z "$RC_FILE" ] && [ -f "$HOME/.profile" ] && RC_FILE="$HOME/.profile"
-  if [ -n "$RC_FILE" ] && grep -q 'OPENCODE_DEV_AGENT_TEAM' "$RC_FILE"; then
-    echo ""
-    echo "The shell-rc export of OPENCODE_DEV_AGENT_TEAM exists in $RC_FILE."
-    printf 'Remove it? [y/N] ' >&2
-    read -r answer || answer=""
-    case "$answer" in
-      y|Y|yes|YES) sed -i '/OPENCODE_DEV_AGENT_TEAM/d' "$RC_FILE"; log "Removed OPENCODE_DEV_AGENT_TEAM export from $RC_FILE." ;;
-      *) log "Left OPENCODE_DEV_AGENT_TEAM export in $RC_FILE." ;;
-    esac
+  # Skip for local installs — no shell-rc was modified.
+  if [ "$LOCAL" = "1" ]; then
+    log "Local install: no shell-rc export to remove."
+  else
+    RC_FILE=""
+    [ -f "$HOME/.bashrc" ] && RC_FILE="$HOME/.bashrc"
+    [ -z "$RC_FILE" ] && [ -f "$HOME/.profile" ] && RC_FILE="$HOME/.profile"
+    if [ -n "$RC_FILE" ] && grep -q 'OPENCODE_DEV_AGENT_TEAM' "$RC_FILE"; then
+      echo ""
+      echo "The shell-rc export of OPENCODE_DEV_AGENT_TEAM exists in $RC_FILE."
+      printf 'Remove it? [y/N] ' >&2
+      read -r answer || answer=""
+      case "$answer" in
+        y|Y|yes|YES) sed -i '/OPENCODE_DEV_AGENT_TEAM/d' "$RC_FILE"; log "Removed OPENCODE_DEV_AGENT_TEAM export from $RC_FILE." ;;
+        *) log "Left OPENCODE_DEV_AGENT_TEAM export in $RC_FILE." ;;
+      esac
+    fi
   fi
 
   log "Uninstall complete. Never touched: project memory/, .opencode/, AgentsReport/, user opencode.json."
@@ -384,25 +421,30 @@ VERSION="1.0.0"
 
 # --------------------------------------------------------------------- #
 # Idempotent shell-rc export of OPENCODE_DEV_AGENT_TEAM
+# Skip for local installs — user sets it per-project via .env or .bashrc.
 # --------------------------------------------------------------------- #
-RC_FILE=""
-[ -f "$HOME/.bashrc" ] && RC_FILE="$HOME/.bashrc"
-[ -z "$RC_FILE" ] && [ -f "$HOME/.profile" ] && RC_FILE="$HOME/.profile"
-if [ -n "$RC_FILE" ]; then
-  if grep -q 'OPENCODE_DEV_AGENT_TEAM' "$RC_FILE"; then
-    echo "==> OPENCODE_DEV_AGENT_TEAM already exported in $RC_FILE (no change)."
-  else
-    printf '\n# dev_agent_team runtime root (added by install.sh)\nexport OPENCODE_DEV_AGENT_TEAM="${OPENCODE_DEV_AGENT_TEAM:-%s}"\n' "$RUNTIME_ROOT" >> "$RC_FILE"
-    echo "==> Added OPENCODE_DEV_AGENT_TEAM export to $RC_FILE"
-  fi
+if [ "$LOCAL" = "1" ]; then
+  echo "==> Local install: skipping shell-rc export (set OPENCODE_DEV_AGENT_TEAM manually per project)."
 else
-  # No rc file: export via ~/.profile (create if missing) so GUI launches can
-  # still pick the var up from a login shell. Guarded/idempotent.
-  if [ ! -f "$HOME/.profile" ]; then
-    printf '# dev_agent_team runtime root (added by install.sh)\nexport OPENCODE_DEV_AGENT_TEAM="${OPENCODE_DEV_AGENT_TEAM:-%s}"\n' "$RUNTIME_ROOT" > "$HOME/.profile"
-    echo "==> Created $HOME/.profile with OPENCODE_DEV_AGENT_TEAM export"
+  RC_FILE=""
+  [ -f "$HOME/.bashrc" ] && RC_FILE="$HOME/.bashrc"
+  [ -z "$RC_FILE" ] && [ -f "$HOME/.profile" ] && RC_FILE="$HOME/.profile"
+  if [ -n "$RC_FILE" ]; then
+    if grep -q 'OPENCODE_DEV_AGENT_TEAM' "$RC_FILE"; then
+      echo "==> OPENCODE_DEV_AGENT_TEAM already exported in $RC_FILE (no change)."
+    else
+      printf '\n# dev_agent_team runtime root (added by install.sh)\nexport OPENCODE_DEV_AGENT_TEAM="${OPENCODE_DEV_AGENT_TEAM:-%s}"\n' "$RUNTIME_ROOT" >> "$RC_FILE"
+      echo "==> Added OPENCODE_DEV_AGENT_TEAM export to $RC_FILE"
+    fi
   else
-    echo "==> No shell rc (.bashrc/.profile) found to export OPENCODE_DEV_AGENT_TEAM; export it manually if needed."
+    # No rc file: export via ~/.profile (create if missing) so GUI launches can
+    # still pick the var up from a login shell. Guarded/idempotent.
+    if [ ! -f "$HOME/.profile" ]; then
+      printf '# dev_agent_team runtime root (added by install.sh)\nexport OPENCODE_DEV_AGENT_TEAM="${OPENCODE_DEV_AGENT_TEAM:-%s}"\n' "$RUNTIME_ROOT" > "$HOME/.profile"
+      echo "==> Created $HOME/.profile with OPENCODE_DEV_AGENT_TEAM export"
+    else
+      echo "==> No shell rc (.bashrc/.profile) found to export OPENCODE_DEV_AGENT_TEAM; export it manually if needed."
+    fi
   fi
 fi
 
@@ -426,7 +468,7 @@ presence_ok=1
 [ -x "$RUNTIME_ROOT/bin/memory-lifecycle.sh" ] || { echo "    MISSING bin/memory-lifecycle.sh" >&2; presence_ok=0; }
 [ -x "$RUNTIME_ROOT/bin/repo-bootstrap.sh" ] || { echo "    MISSING bin/repo-bootstrap.sh" >&2; presence_ok=0; }
 [ -d "$RUNTIME_ROOT/skills" ] || { echo "    MISSING skills/" >&2; presence_ok=0; }
-[ "$(find "$RUNTIME_ROOT/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "12" ] || { echo "    skills/ has != 12 dirs" >&2; presence_ok=0; }
+[ "$(find "$RUNTIME_ROOT/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "18" ] || { echo "    skills/ has != 18 dirs" >&2; presence_ok=0; }
 if [ "$presence_ok" = "1" ]; then
   echo "    runtime presence + permission checks: PASS"
 else
@@ -471,8 +513,17 @@ fi
 # --------------------------------------------------------------------- #
 echo "==> Installed runtime tree to $RUNTIME_ROOT"
 echo "==> Upgrade: re-run ./scripts/install.sh from a newer source"
-echo "==> Uninstall: ./scripts/install.sh --uninstall"
-echo "==> The source checkout may now be deleted; agents + runtime remain installed."
+
+if [ "$LOCAL" = "1" ]; then
+  echo "==> Local install: agents + runtime in ./ .opencode/"
+  echo "==> Uninstall: ./scripts/install.sh --uninstall --local"
+  echo ""
+  echo "==> To use in this project, add to your shell or .env:"
+  echo "    export OPENCODE_DEV_AGENT_TEAM=\"$RUNTIME_ROOT\""
+else
+  echo "==> Uninstall: ./scripts/install.sh --uninstall"
+  echo "==> The source checkout may now be deleted; agents + runtime remain installed."
+fi
 
 if command -v opencode >/dev/null 2>&1; then
   echo "==> Reminder: restart opencode, then run: opencode agent list"
