@@ -9,7 +9,6 @@ It is the central location for all AI-related configuration, state, and document
 .opencode/
 ├── README.md              # This file — coordination overview
 ├── agents.md              # Agent roster, capabilities, and routing
-├── AGENTS.md              # Global agent definitions (symlink or copy)
 ├── tests/                 # AI test suites
 │   ├── test-all.sh        # Test aggregator
 │   ├── test-*.sh          # Individual test suites
@@ -18,10 +17,15 @@ It is the central location for all AI-related configuration, state, and document
 │   └── <goal>/
 │       ├── tasks.json     # Task state machine
 │       └── ...
+├── agents/                # Agent definitions (installed via install --local)
+│   └── <agent>.md
 └── skills/                # Local skill overrides (optional)
     └── <skill-name>/
         └── SKILL.md
 ```
+
+**Note:** After running `repo-bootstrap.sh`, additional files are generated:
+`AGENTS.md`, `.bootstrap-meta`, and `skills/{repo-context,architecture,build-and-test,conventions,deployment}/SKILL.md`.
 
 ## Purpose
 

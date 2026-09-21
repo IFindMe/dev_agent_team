@@ -92,7 +92,7 @@ prerequisites: <what must be true before using this skill>
 | Tester | tdd, test-analysis, verification-loop | failure-analysis |
 | Reviewer | code-review, security-review | test-analysis, architecture-design |
 | Maintainer | refactoring | code-review |
-| Toolsmith | systematic-debugging, impact-analysis, session-coordination | adr-management |
+| Toolsmith | systematic-debugging, impact-analysis, deadcode-detection, session-coordination | adr-management |
 | Designer | — | research, browser-automation |
 | Philosopher | — | research |
 | Writer | — | research |

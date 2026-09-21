@@ -1,9 +1,9 @@
 ---
 name: coordination
 description: Long-context coordination patterns for orchestrator — agent routing, skill dispatch, state tracking, and context handoff
-location: skills/coordination/SKILL.md
-version: 1.0.0
-owner: orchestrator
+version: "1.0"
+owner: Orchestrator
+prerequisites: bash, state.sh, memory-lifecycle.sh
 ---
 
 # Coordination Skill

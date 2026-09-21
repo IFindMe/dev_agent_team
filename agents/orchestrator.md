@@ -191,7 +191,7 @@ Storage rules (canonical):
 
 ### Skills System
 
-Skills are reusable, specialized capabilities that agents load when needed. They live in `skills/` at the repository root — index: skills/SKILLS.md (17 capabilities: tdd, systematic-debugging, architecture-design, code-review, security-review, repository-analysis, failure-analysis, refactoring, test-analysis, incident-investigation, browser-automation, research, arch-overview, verification-loop, impact-analysis, adr-management, session-coordination).
+Skills are reusable, specialized capabilities that agents load when needed. They live in `skills/` at the repository root — index: skills/SKILLS.md (19 capabilities: tdd, systematic-debugging, architecture-design, code-review, security-review, repository-analysis, failure-analysis, refactoring, test-analysis, incident-investigation, browser-automation, research, arch-overview, verification-loop, impact-analysis, adr-management, session-coordination, deadcode-detection, coordination).
 
 #### Skill Loading
 
@@ -411,7 +411,7 @@ runs on every task start, not once per session.
 
 Core rules:
 
-- Read `.opencode/AGENTS.md` and the relevant `.opencode/` skills at task start (or via the dispatch brief) before making architectural or implementation decisions.
+- Read `.opencode/agents.md` and the relevant `.opencode/` skills at task start (or via the dispatch brief) before making architectural or implementation decisions.
 - Check `.opencode/` freshness via `repo-bootstrap.sh status` (fresh | stale | missing); refresh when `stale` before continuing.
 - Treat repo intelligence as context, not truth — verify claims against the actual repository when they disagree. Avoid rediscovery: if knowledge exists in `.opencode/`, do not re-explore it.
 - Fix stale `.opencode/` content via the owning agent's own system: Maintainer for conventions, Architect for architecture, Explorer for context, Builder/Tester for build-and-test.

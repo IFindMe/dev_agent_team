@@ -83,12 +83,15 @@ if [ "$LOCAL" = "1" ]; then
   TARGET="$LOCAL_TARGET"
 fi
 
-# Runtime root resolution (D3/D8): env var first, then local mode, then XDG_CONFIG_HOME, then
-# ~/.config/opencode/dev-agent-team.
-if [ -n "${OPENCODE_DEV_AGENT_TEAM:-}" ]; then
-  RUNTIME_ROOT="$OPENCODE_DEV_AGENT_TEAM"
-elif [ "$LOCAL" = "1" ]; then
+# Runtime root resolution (D3/D8): local mode forces local path, then env var,
+# then XDG_CONFIG_HOME, then ~/.config/opencode/dev-agent-team.
+if [ "$LOCAL" = "1" ]; then
   RUNTIME_ROOT="$LOCAL_ROOT"
+  if [ -n "${OPENCODE_DEV_AGENT_TEAM:-}" ] && [ "$OPENCODE_DEV_AGENT_TEAM" != "$LOCAL_ROOT" ]; then
+    log "WARNING: OPENCODE_DEV_AGENT_TEAM=$OPENCODE_DEV_AGENT_TEAM is set but --local forces $LOCAL_ROOT"
+  fi
+elif [ -n "${OPENCODE_DEV_AGENT_TEAM:-}" ]; then
+  RUNTIME_ROOT="$OPENCODE_DEV_AGENT_TEAM"
 elif [ -n "${XDG_CONFIG_HOME:-}" ]; then
   RUNTIME_ROOT="$XDG_CONFIG_HOME/opencode/dev-agent-team"
 else
@@ -345,11 +348,12 @@ done
 # Test suites from .opencode/tests/
 for s in test-install.sh test-runtime.sh test-path-resolution.sh test-memory-isolation.sh \
          test-agent-architecture.sh test-memory-system.sh test-repo-bootstrap.sh test-integration.sh test-agora.sh \
-         test-local-install.sh test-adr.sh test-impact.sh test-arch-overview.sh test-deadcode.sh test-sessions.sh; do
+         test-local-install.sh test-adr.sh test-impact.sh test-arch-overview.sh test-deadcode.sh test-sessions.sh \
+         test-state.sh; do
   if [ -f "$TESTS_SRC_DIR/$s" ]; then
     install_managed_file "$TESTS_SRC_DIR/$s" "bin/$s"
     chmod 755 "$RUNTIME_ROOT/bin/$s"
-    echo "    runtime: bin/$s (from .opencode/tests/)"
+    echo "    runtime: bin/$s [from .opencode/tests/]"
   fi
 done
 
@@ -377,7 +381,7 @@ mkdir -p "$RUNTIME_ROOT/improvements/pending" \
          "$RUNTIME_ROOT/improvements/rejected"
 if [ -f "$ROOT/improvements/README.md" ] && [ ! -f "$RUNTIME_ROOT/improvements/README.md" ]; then
   cp -p "$ROOT/improvements/README.md" "$RUNTIME_ROOT/improvements/README.md"
-  echo "    runtime: improvements/README.md (first install)"
+  echo "    runtime: improvements/README.md [first install]"
 fi
 
 # Runtime backup retention (same KEEP_BACKUPS=5 policy).
@@ -433,14 +437,14 @@ VERSION="1.0.0"
 # Skip for local installs — user sets it per-project via .env or .bashrc.
 # --------------------------------------------------------------------- #
 if [ "$LOCAL" = "1" ]; then
-  echo "==> Local install: skipping shell-rc export (set OPENCODE_DEV_AGENT_TEAM manually per project)."
+  echo "==> Local install: skipping shell-rc export [set OPENCODE_DEV_AGENT_TEAM manually per project]."
 else
   RC_FILE=""
   [ -f "$HOME/.bashrc" ] && RC_FILE="$HOME/.bashrc"
   [ -z "$RC_FILE" ] && [ -f "$HOME/.profile" ] && RC_FILE="$HOME/.profile"
   if [ -n "$RC_FILE" ]; then
     if grep -q 'OPENCODE_DEV_AGENT_TEAM' "$RC_FILE"; then
-      echo "==> OPENCODE_DEV_AGENT_TEAM already exported in $RC_FILE (no change)."
+      echo "==> OPENCODE_DEV_AGENT_TEAM already exported in $RC_FILE [no change]."
     else
       printf '\n# dev_agent_team runtime root (added by install.sh)\nexport OPENCODE_DEV_AGENT_TEAM="${OPENCODE_DEV_AGENT_TEAM:-%s}"\n' "$RUNTIME_ROOT" >> "$RC_FILE"
       echo "==> Added OPENCODE_DEV_AGENT_TEAM export to $RC_FILE"
@@ -452,7 +456,7 @@ else
       printf '# dev_agent_team runtime root (added by install.sh)\nexport OPENCODE_DEV_AGENT_TEAM="${OPENCODE_DEV_AGENT_TEAM:-%s}"\n' "$RUNTIME_ROOT" > "$HOME/.profile"
       echo "==> Created $HOME/.profile with OPENCODE_DEV_AGENT_TEAM export"
     else
-      echo "==> No shell rc (.bashrc/.profile) found to export OPENCODE_DEV_AGENT_TEAM; export it manually if needed."
+      echo "==> No shell rc [.bashrc/.profile] found to export OPENCODE_DEV_AGENT_TEAM; export it manually if needed."
     fi
   fi
 fi
@@ -467,7 +471,7 @@ if [ -f "$VP_RT" ]; then
   vprc=0
   bash "$VP_RT" || vprc=$?
   case "$vprc" in
-    0|2) echo "    verify-permission-patterns: ok (rc=$vprc)" ;;
+    0|2) echo "    verify-permission-patterns: ok [rc=$vprc]" ;;
     *)   echo "    WARNING: verify-permission-patterns rc=$vprc" >&2 ;;
   esac
 fi
@@ -477,11 +481,11 @@ presence_ok=1
 [ -x "$RUNTIME_ROOT/bin/memory-lifecycle.sh" ] || { echo "    MISSING bin/memory-lifecycle.sh" >&2; presence_ok=0; }
 [ -x "$RUNTIME_ROOT/bin/repo-bootstrap.sh" ] || { echo "    MISSING bin/repo-bootstrap.sh" >&2; presence_ok=0; }
 [ -d "$RUNTIME_ROOT/skills" ] || { echo "    MISSING skills/" >&2; presence_ok=0; }
-[ "$(find "$RUNTIME_ROOT/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "18" ] || { echo "    skills/ has != 18 dirs" >&2; presence_ok=0; }
+[ "$(find "$RUNTIME_ROOT/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "19" ] || { echo "    skills/ has != 19 dirs" >&2; presence_ok=0; }
 if [ "$presence_ok" = "1" ]; then
   echo "    runtime presence + permission checks: PASS"
 else
-  echo "    runtime presence + permission checks: some checks FAILED (see above)" >&2
+  echo "    runtime presence + permission checks: some checks FAILED [see above]" >&2
 fi
 
 # Optional: run the new runtime test suites in a throwaway temp HOME via
@@ -498,7 +502,7 @@ if [ "$SELF_TEST" = "1" ]; then
   cp -r "$ROOT/improvements/." "$SELF_SRC/improvements/" 2>/dev/null || true
   SELF_RT="$SELF_T/runtime"
   SELF_AG="$SELF_T/agents"
-  echo "    Running self-test (temp HOME install) ..."
+  echo "    Running self-test [temp HOME install] ..."
   env -i HOME="$SELF_TMP_HOME" \
       OPENCODE_AGENTS_DIR="$SELF_AG" \
       OPENCODE_DEV_AGENT_TEAM="$SELF_RT" \
@@ -510,9 +514,9 @@ if [ "$SELF_TEST" = "1" ]; then
       TEAM_ROOT="$SELF_SRC" \
       bash "$RUNTIME_ROOT/bin/test-memory-isolation.sh" >"$SELF_T/mem.log" 2>&1 && self_mem=0 || self_mem=$?
   if [ "$self_install" = "0" ] && [ "$self_mem" = "0" ]; then
-    echo "    self-test: PASS (test-install + test-memory-isolation sub-suites green)"
+    echo "    self-test: PASS [test-install + test-memory-isolation sub-suites green]"
   else
-    echo "    self-test: FAILED (install rc=$self_install, memory rc=$self_mem) — see $SELF_T logs" >&2
+    echo "    self-test: FAILED [install rc=$self_install, memory rc=$self_mem] — see $SELF_T logs" >&2
   fi
   rm -rf "$SELF_T"
 fi

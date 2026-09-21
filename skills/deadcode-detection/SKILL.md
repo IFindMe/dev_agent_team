@@ -2,7 +2,7 @@
 name: deadcode-detection
 description: Find orphaned code, unused symbols, and stale references using grep-based pattern matching
 version: "1.0"
-owner: toolsmith
+owner: Toolsmith
 prerequisites: bash, grep, find, stat
 ---
 
