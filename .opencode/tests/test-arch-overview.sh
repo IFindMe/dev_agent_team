@@ -13,7 +13,7 @@
 
 set -uo pipefail
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 ARCH="$TEAM_ROOT/scripts/arch-overview.sh"
 
 [ -x "$ARCH" ] || { echo "FAIL  setup — scripts/arch-overview.sh missing/not executable" >&2; exit 1; }

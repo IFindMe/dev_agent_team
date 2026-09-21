@@ -2,13 +2,14 @@
 #
 # test-all.sh — Run every test suite in the repo and report a combined result.
 #
-#   bash scripts/test-all.sh
+#   bash .opencode/tests/test-all.sh
 #
 # Exit code: 0 if all suites pass, non-zero if any suite fails.
 # Optional: pass --verbose to show each suite's full output on failure.
 
 set -uo pipefail
-TEAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TEAM_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VERBOSE=0
 [ "${1:-}" = "--verbose" ] && VERBOSE=1
 
@@ -25,7 +26,7 @@ pass=0; fail=0
 printf "${BOLD}=== Agent Team: full test run ===${RESET}\n\n"
 
 for s in "${SUITES[@]}"; do
-  script="$TEAM_ROOT/scripts/$s.sh"
+  script="$TESTS_DIR/$s.sh"
   if [ ! -f "$script" ]; then
     printf "  %-28s ${BOLD}MISSING${RESET}\n" "$s"
     fail=$((fail + 1))

@@ -19,7 +19,7 @@ set -uo pipefail
 #
 # Exit codes: 0 = all pass, 1 = any failure.
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 SRC_SCRIPTS="$TEAM_ROOT/scripts"
 RUNTIME_ROOT_DEFAULT="$HOME/.config/opencode/dev-agent-team"
 
@@ -62,7 +62,7 @@ if assert_dir "$BIN_RUNTIME" \
    && assert_file "$BIN_RUNTIME/repo-bootstrap.sh" \
    && assert_file "$BIN_RUNTIME/verify-permission-patterns.sh" \
    && assert_dir "$RUNTIME/skills" \
-   && [ "$(find "$RUNTIME/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "18" ] \
+   && [ "$(find "$RUNTIME/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)" = "19" ] \
    && assert_file "$RUNTIME/skills/SKILLS.md" \
    && assert_dir "$RUNTIME/improvements" \
    && assert_file "$RUNTIME/install-manifest.json"; then

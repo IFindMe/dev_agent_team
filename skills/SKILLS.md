@@ -45,7 +45,9 @@ skills/
 │   └── SKILL.md
 ├── deadcode-detection/          # Dead code and orphaned symbol detection
 │   └── SKILL.md
-└── session-coordination/        # Multi-agent session coordination, file locks, conflict detection
+├── session-coordination/        # Multi-agent session coordination, file locks, conflict detection
+│   └── SKILL.md
+└── coordination/                # Long-context coordination patterns for orchestrator
     └── SKILL.md
 ```
 

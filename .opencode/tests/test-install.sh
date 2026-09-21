@@ -14,7 +14,7 @@ set -uo pipefail
 #
 # Exit codes: 0 = all pass, 1 = any failure.
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 SRC_SCRIPTS="$TEAM_ROOT/scripts"
 
 PASS=0; FAIL=0
@@ -36,8 +36,9 @@ RUNTIME="$T/runtime"          # OPENCODE_DEV_AGENT_TEAM override
 AGENTS_T="$T/agents"          # OPENCODE_AGENTS_DIR override
 mkdir -p "$SRC" "$HOME_T"
 cp -r "$TEAM_ROOT/agents" "$SRC/agents"
-mkdir -p "$SRC/scripts" "$SRC/skills" "$SRC/improvements"
+mkdir -p "$SRC/scripts" "$SRC/skills" "$SRC/improvements" "$SRC/.opencode/tests"
 cp -p "$SRC_SCRIPTS"/*.sh "$SRC/scripts/" 2>/dev/null || true
+cp -p "$TEAM_ROOT/.opencode/tests/"*.sh "$SRC/.opencode/tests/" 2>/dev/null || true
 cp -r "$TEAM_ROOT/skills/." "$SRC/skills/" 2>/dev/null || true
 cp -r "$TEAM_ROOT/improvements/." "$SRC/improvements/" 2>/dev/null || true
 # Guarantee the 14-agent gate passes (install shuts down if <14 at source).
@@ -75,13 +76,13 @@ else
 fi
 
 # ======================================================================== #
-# TEST T03: runtime skills 18 dirs + SKILLS.md installed
+# TEST T03: runtime skills 19 dirs + SKILLS.md installed
 # ======================================================================== #
 N_SK="$(find "$RUNTIME/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)"
-if [ "$N_SK" = "18" ] && assert_file "$RUNTIME/skills/SKILLS.md"; then
-  ok "T03 runtime skills/ has 18 skill dirs + SKILLS.md"
+if [ "$N_SK" = "19" ] && assert_file "$RUNTIME/skills/SKILLS.md"; then
+  ok "T03 runtime skills/ has 19 skill dirs + SKILLS.md"
 else
-  fail "T03 runtime skills installed" "dirs=$N_SK (want 18), SKILLS.md=$([ -f "$RUNTIME/skills/SKILLS.md" ] && echo present || echo MISSING)"
+  fail "T03 runtime skills installed" "dirs=$N_SK (want 19), SKILLS.md=$([ -f "$RUNTIME/skills/SKILLS.md" ] && echo present || echo MISSING)"
 fi
 
 # ======================================================================== #

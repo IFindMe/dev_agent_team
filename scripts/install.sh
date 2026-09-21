@@ -333,14 +333,23 @@ install_managed_file() { # <src> <relpath>
 
 # bin/ — memory-lifecycle.sh, repo-bootstrap.sh, verify-permission-patterns.sh, state.sh, test suites
 BIN_SRC_DIR="$ROOT/scripts"
+TESTS_SRC_DIR="$ROOT/.opencode/tests"
 mkdir -p "$RUNTIME_ROOT/bin"
-for s in memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh state.sh agora.sh \
-         test-install.sh test-runtime.sh test-path-resolution.sh test-memory-isolation.sh \
-         test-agent-architecture.sh test-memory-system.sh test-repo-bootstrap.sh test-integration.sh test-agora.sh; do
+for s in memory-lifecycle.sh repo-bootstrap.sh verify-permission-patterns.sh state.sh agora.sh; do
   if [ -f "$BIN_SRC_DIR/$s" ]; then
     install_managed_file "$BIN_SRC_DIR/$s" "bin/$s"
     chmod 755 "$RUNTIME_ROOT/bin/$s"
     echo "    runtime: bin/$s"
+  fi
+done
+# Test suites from .opencode/tests/
+for s in test-install.sh test-runtime.sh test-path-resolution.sh test-memory-isolation.sh \
+         test-agent-architecture.sh test-memory-system.sh test-repo-bootstrap.sh test-integration.sh test-agora.sh \
+         test-local-install.sh test-adr.sh test-impact.sh test-arch-overview.sh test-deadcode.sh test-sessions.sh; do
+  if [ -f "$TESTS_SRC_DIR/$s" ]; then
+    install_managed_file "$TESTS_SRC_DIR/$s" "bin/$s"
+    chmod 755 "$RUNTIME_ROOT/bin/$s"
+    echo "    runtime: bin/$s (from .opencode/tests/)"
   fi
 done
 

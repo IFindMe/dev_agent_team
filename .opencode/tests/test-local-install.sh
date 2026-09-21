@@ -13,7 +13,7 @@ set -uo pipefail
 #
 # Exit codes: 0 = all pass, 1 = any failure.
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 SRC_SCRIPTS="$TEAM_ROOT/scripts"
 
 PASS=0; FAIL=0

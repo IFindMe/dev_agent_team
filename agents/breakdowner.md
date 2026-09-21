@@ -75,7 +75,7 @@ Your primary evidence is the breakdown itself: the numbered task tree, the depen
 
 Stop when the breakdown is complete, all files are written, and the validation invariant passes; escalate when the goal is too vague to decompose safely.
 
-Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (18 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project. `.tasks/` is additional project-scoped state, relative to the current project git root, and is never part of the runtime.
+Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (19 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project. `.tasks/` is additional project-scoped state, relative to the current project git root, and is never part of the runtime.
 
 ## Memory & Skills Awareness
 

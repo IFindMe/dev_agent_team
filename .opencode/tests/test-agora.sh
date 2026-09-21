@@ -30,7 +30,7 @@
 
 set -uo pipefail
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 AGORA="$TEAM_ROOT/scripts/agora.sh"
 SEED="$TEAM_ROOT/agora/contributions.jsonl"
 

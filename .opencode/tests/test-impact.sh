@@ -8,7 +8,7 @@
 
 set -uo pipefail
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 IMPACT="$TEAM_ROOT/scripts/impact.sh"
 [ -x "$IMPACT" ] || { echo "FAIL  setup — scripts/impact.sh missing/not executable" >&2; exit 1; }
 

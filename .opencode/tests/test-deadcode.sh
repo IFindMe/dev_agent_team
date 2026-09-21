@@ -8,8 +8,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEAM_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TEST_DIR="/tmp/deadcode-test-$$"
-DEADCODE="$SCRIPT_DIR/deadcode.sh"
+DEADCODE="$TEAM_ROOT/scripts/deadcode.sh"
 
 # Test counters
 declare -i PASS_COUNT=0 FAIL_COUNT=0 TOTAL=0

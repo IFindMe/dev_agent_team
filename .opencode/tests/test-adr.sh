@@ -6,7 +6,7 @@
 
 set -uo pipefail
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 ADR="$TEAM_ROOT/scripts/adr.sh"
 
 [ -x "$ADR" ] || { echo "FAIL  setup — scripts/adr.sh missing/not executable" >&2; exit 1; }

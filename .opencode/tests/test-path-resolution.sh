@@ -4,7 +4,7 @@ set -uo pipefail
 # test-path-resolution.sh — Verify runtime path resolution for agents, skills,
 # and improvements. Proves (parent D9 proof 6 + 9):
 #   6. all 14 prompts contain the canonical runtime sentence; runtime skills/
-#      has 18 SKILL.md with required frontmatter; sampling read via resolved path.
+#      has 19 SKILL.md with required frontmatter; sampling read via resolved path.
 #   9. runtime improvements/ scaffold + proposal-file flow; existing
 #      test-agent-architecture checks re-run against installed prompts.
 #
@@ -14,7 +14,7 @@ set -uo pipefail
 #
 # Exit codes: 0 = all pass, 1 = any failure.
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 AGENTS="$TEAM_ROOT/agents"
 SKILLS="$TEAM_ROOT/skills"
 IMPROV="$TEAM_ROOT/improvements"
@@ -25,7 +25,7 @@ RUNTIME="${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"
 # Allow test to point at a runtime explicitly (e.g. environment variable RUNTIME_ROOT).
 RUNTIME="${RUNTIME_ROOT:-$RUNTIME}"
 
-CANONICAL='Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (18 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.'
+CANONICAL='Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (19 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.'
 
 PASS=0; FAIL=0
 T="$(mktemp -d)"
@@ -56,7 +56,7 @@ else
 fi
 
 # ======================================================================== #
-# TEST T02: runtime skills/ has 18 SKILL.md with required frontmatter
+# TEST T02: runtime skills/ has 19 SKILL.md with required frontmatter
 # ======================================================================== #
 # When run against the repo checkout, skills live at TEAM_ROOT/skills (13 dirs +
 # SKILLS.md). When run against an installed runtime, they live at RUNTIME/skills.
@@ -74,10 +74,10 @@ for d in "$RSKILLS"/*/; do
   head -10 "$f" | grep -q "^version:" || FRONT_OK=0
   head -10 "$f" | grep -q "^owner:" || FRONT_OK=0
 done
-if [ "$COUNT" = "18" ] && [ "$FRONT_OK" = "1" ] && assert_file "$RSKILLS/SKILLS.md"; then
-  ok "T02 runtime skills has 18 SKILL.md with required frontmatter + SKILLS.md"
+if [ "$COUNT" = "19" ] && [ "$FRONT_OK" = "1" ] && assert_file "$RSKILLS/SKILLS.md"; then
+  ok "T02 runtime skills has 19 SKILL.md with required frontmatter + SKILLS.md"
 else
-  fail "T02 runtime skills has 18 SKILL.md" "count=$COUNT front_ok=$FRONT_OK"
+  fail "T02 runtime skills has 19 SKILL.md" "count=$COUNT front_ok=$FRONT_OK"
 fi
 
 # ======================================================================== #
@@ -153,7 +153,7 @@ fi
 # TEST T07: existing test-agent-architecture structural checks re-run against
 #           installed prompts (TEAM_ROOT override)
 # ======================================================================== #
-ARCH_OUT="$(bash "$TEAM_ROOT/scripts/test-agent-architecture.sh" 2>&1 || true)"
+ARCH_OUT="$(bash "$TEAM_ROOT/.opencode/tests/test-agent-architecture.sh" 2>&1 || true)"
 N_PASS_A="$(printf '%s\n' "$ARCH_OUT" | grep -cE '^PASS  T' || true)"
 N_FAIL_A="$(printf '%s\n' "$ARCH_OUT" | grep -cE '^FAIL  T' || true)"
 if [ "$N_FAIL_A" = "0" ] && [ "$N_PASS_A" -ge 16 ]; then

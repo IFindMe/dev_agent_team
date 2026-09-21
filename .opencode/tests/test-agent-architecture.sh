@@ -17,7 +17,7 @@ set -uo pipefail
 # Conventions follow test-repo-bootstrap.sh / verify-permission-patterns.sh:
 #   PASS/FAIL echo, deterministic assertions, no external deps beyond bash + grep.
 
-TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+TEAM_ROOT="${TEAM_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 AGENTS="$TEAM_ROOT/agents"
 DOCS="$TEAM_ROOT/docs"
 SCRIPTS="$TEAM_ROOT/scripts"

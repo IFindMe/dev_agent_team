@@ -90,7 +90,32 @@ role — that would break the dedicated-agent routing this team depends on. If a
 specialist is not registered or fails to load, report the workflow as BLOCKED
 with the missing agent named — do not improvise a substitute.
 
-Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (18 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
+Global runtime: always resolve via `"${OPENCODE_DEV_AGENT_TEAM:-$HOME/.config/opencode/dev-agent-team}"`. Runtime-owned artifacts live under `bin/` (scripts), `skills/` (19 skills), `improvements/`. Project-scoped artifacts (`memory/`, `.opencode/`, `./AgentsReport/`) stay relative to this project.
+
+## .opencode/ Awareness
+
+When working in a project directory, check for `.opencode/`:
+
+1. **Local installation**: If `.opencode/dev-agent-team/` exists, prefer local runtime over global
+2. **Local tests**: Test scripts live in `.opencode/tests/` (not `scripts/`)
+3. **Local tasks**: Task state lives in `.opencode/tasks/` or `.tasks/`
+4. **Local agents**: Agent definitions may be in `.opencode/agents/`
+
+Detection:
+```bash
+# Check for local installation
+if [ -d ".opencode/dev-agent-team" ]; then
+  export OPENCODE_DEV_AGENT_TEAM="$(pwd)/.opencode/dev-agent-team"
+fi
+```
+
+Coordination document: `.opencode/README.md` — read when starting work in a project.
+Agent roster: `.opencode/agents.md` — read when routing tasks.
+
+## Coordination Skill
+
+Load `${OPENCODE_DEV_AGENT_TEAM}/skills/coordination/SKILL.md` for long-context
+coordination patterns: agent routing, skill dispatch, state tracking, context handoff.
 
 Environment and setup facts (agent-definition config paths, staging copy sync, no hot-reload, `opencode agent list` re-verify after edits, runtime-tree layout): docs/OPERATIONS_REFERENCE.md §Environment and Setup — read when installing, editing agent definitions, or verifying the roster.
 

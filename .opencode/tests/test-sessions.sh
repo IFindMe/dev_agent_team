@@ -5,8 +5,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SESSIONS="$SCRIPT_DIR/sessions.sh"
+TEAM_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$TEAM_ROOT"
+SESSIONS="$TEAM_ROOT/scripts/sessions.sh"
 TEST_GOAL="_test_sessions_$$"
 PASS=0
 FAIL=0
