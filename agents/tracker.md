@@ -46,12 +46,6 @@ permissions:
     resource: "python3 .opencode/scripts/task_state.py *"
     effect: allow
   - action: "shell"
-    resource: "*"
-    effect: ask
-  - action: "shell"
-    resource: "python3 .opencode/scripts/task_state.py *"
-    effect: allow
-  - action: "shell"
     resource: "python3 ~/.config/opencode/scripts/task_state.py *"
     effect: allow
   - action: "external_directory"

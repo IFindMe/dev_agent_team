@@ -143,7 +143,7 @@ def validate(root: Path) -> list[str]:
                 errors.append(f"orchestrator contains contradictory routing rule: {phrase}")
         if ".opencode/reports/<workflow-id>/" not in orchestrator:
             errors.append("orchestrator report contract must use .opencode/reports/<workflow-id>/")
-        route_start = orchestrator.find("## Routing Table")
+        route_start = orchestrator.find("## Routing Table — MANDATORY Specialist per Concern")
         route_end = orchestrator.find("\n## ", route_start + 4)
         route_section = orchestrator[route_start:route_end if route_end >= 0 else None]
         route_names = set(re.findall(r'^\|[^\n]*?\| `([a-z][a-z-]*)` \|', route_section, re.MULTILINE))
