@@ -42,12 +42,6 @@ permissions:
   - action: "edit"
     resource: "test/**"
     effect: allow
-  - action: "edit"
-    resource: "**/*test*"
-    effect: allow
-  - action: "edit"
-    resource: "**/*spec*"
-    effect: allow
   - action: "shell"
     resource: "*"
     effect: ask

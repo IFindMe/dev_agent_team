@@ -46,19 +46,10 @@ permissions:
     resource: "git status *"
     effect: allow
   - action: "shell"
-    resource: "git diff *"
-    effect: allow
-  - action: "shell"
     resource: "git log --oneline *"
     effect: allow
   - action: "shell"
-    resource: "git show *"
-    effect: allow
-  - action: "shell"
     resource: "git ls-files *"
-    effect: allow
-  - action: "shell"
-    resource: "git grep *"
     effect: allow
   - action: "external_directory"
     resource: "*"
