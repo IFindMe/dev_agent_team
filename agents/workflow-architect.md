@@ -2,16 +2,43 @@
 name: workflow-architect
 description: Requirements-to-workflow modeling agent that turns tasks, processes, and complex behaviors into precise state-based workflow specifications
 mode: subagent
-# NOTE: Bash permission rules apply to EACH command segment independently (tree-sitter split);
-#       pipelines need every segment allowlisted incl. tails (head/wc/sort/grep/rg). Prefer single commands.
-# CAVEAT: an in-session "always allow" approval injects pattern:* allow that overrides these denies
-#         for every agent until the server restarts.
-permission:
-  edit: allow
-  bash: allow
-  webfetch: deny
-  websearch: deny
-  task: deny
+permissions:
+  - action: "*"
+    resource: "*"
+    effect: deny
+  - action: "read"
+    resource: "*"
+    effect: allow
+  - action: "glob"
+    resource: "*"
+    effect: allow
+  - action: "grep"
+    resource: "*"
+    effect: ask
+  - action: "read"
+    resource: "*.env"
+    effect: deny
+  - action: "read"
+    resource: "*.env.*"
+    effect: deny
+  - action: "read"
+    resource: "**/*.env"
+    effect: deny
+  - action: "read"
+    resource: "**/*.env.*"
+    effect: deny
+  - action: "read"
+    resource: "*.env.example"
+    effect: allow
+  - action: "read"
+    resource: "**/*.env.example"
+    effect: allow
+  - action: "edit"
+    resource: ".opencode/reports/**"
+    effect: allow
+  - action: "external_directory"
+    resource: "*"
+    effect: deny
 ---
 
 # Workflow Architect

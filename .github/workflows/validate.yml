@@ -1,0 +1,29 @@
+name: Validate agent team
+
+on:
+  push:
+    branches: ["main", "fix/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check shell syntax
+        run: bash -n install.sh
+      - name: Compile Python
+        run: python -m compileall -q scripts tests
+      - name: Validate agent definitions
+        run: python scripts/validate.py
+      - name: Run unit and installer integration tests
+        run: python -m unittest discover -s tests -v

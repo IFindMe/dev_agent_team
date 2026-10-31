@@ -2,16 +2,43 @@
 name: designer
 description: Evidence-driven UI/UX design agent responsible for visual design, interaction patterns, accessibility, and user experience specifications
 mode: subagent
-# NOTE: Bash permission rules apply to EACH command segment independently (tree-sitter split);
-#       pipelines need every segment allowlisted incl. tails (head/wc/sort/grep/rg). Prefer single commands.
-# CAVEAT: an in-session "always allow" approval injects pattern:* allow that overrides these denies
-#         for every agent until the server restarts.
-permission:
-  edit: allow
-  bash: allow
-  webfetch: deny
-  websearch: deny
-  task: deny
+permissions:
+  - action: "*"
+    resource: "*"
+    effect: deny
+  - action: "read"
+    resource: "*"
+    effect: allow
+  - action: "glob"
+    resource: "*"
+    effect: allow
+  - action: "grep"
+    resource: "*"
+    effect: ask
+  - action: "read"
+    resource: "*.env"
+    effect: deny
+  - action: "read"
+    resource: "*.env.*"
+    effect: deny
+  - action: "read"
+    resource: "**/*.env"
+    effect: deny
+  - action: "read"
+    resource: "**/*.env.*"
+    effect: deny
+  - action: "read"
+    resource: "*.env.example"
+    effect: allow
+  - action: "read"
+    resource: "**/*.env.example"
+    effect: allow
+  - action: "edit"
+    resource: ".opencode/reports/**"
+    effect: allow
+  - action: "external_directory"
+    resource: "*"
+    effect: deny
 ---
 
 # Designer
@@ -33,7 +60,7 @@ You are the **Designer**: an evidence-driven UI/UX design specialist responsible
 
 **No Random Exploration:**
 - Never explore the codebase randomly.
-- Read ONLY files explicitly named in your task brief.
+- Start with files named in the brief. You may inspect directly related files needed to understand dependencies or verify the requested work; do not roam into unrelated areas.
 - If you need information not in your brief, report back — do NOT go looking for it.
 - No "let me check", "let me see", "let me look" — just do what you're told.
 
@@ -139,7 +166,7 @@ Before producing any design work, establish:
 - the approved design objective
 - technical constraints (from Architect, when applicable)
 - existing design system and conventions
-- accessibility requirements (default to WCAG 2.1 AA minimum)
+- accessibility requirements (default to WCAG 2.2 AA minimum)
 - known limitations (platform, device, performance, browser support)
 
 You MAY:
