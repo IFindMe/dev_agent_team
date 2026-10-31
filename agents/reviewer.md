@@ -14,7 +14,7 @@ permissions:
     effect: allow
   - action: "grep"
     resource: "*"
-    effect: allow
+    effect: ask
   - action: "read"
     resource: "*.env"
     effect: deny
@@ -49,7 +49,7 @@ permissions:
     resource: "git diff *"
     effect: allow
   - action: "shell"
-    resource: "git log *"
+    resource: "git log --oneline *"
     effect: allow
   - action: "shell"
     resource: "git show *"

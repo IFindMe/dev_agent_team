@@ -45,12 +45,6 @@ permissions:
   - action: "subagent"
     resource: "writer"
     effect: allow
-  - action: "todoread"
-    resource: "*"
-    effect: allow
-  - action: "todowrite"
-    resource: "*"
-    effect: allow
   - action: "question"
     resource: "*"
     effect: allow
@@ -184,7 +178,7 @@ Routing authority: the `## Routing Table` below is the MANDATORY concern → age
 ## Agent Availability and Dispatch Integrity
 
 Dispatch rule — the Orchestrator dispatches the REAL dedicated specialists by
-name through the Task tool, one file per role under `agents/`: `agents/explorer.md`,
+name through the `subagent` tool, one file per role under `agents/`: `agents/explorer.md`,
 `agents/builder.md`, `agents/tracker.md`, `agents/detective.md`,
 `agents/philosopher.md`, `agents/designer.md`, `agents/tester.md`,
 `agents/toolsmith.md`, `agents/maintainer.md`, `agents/writer.md`,
@@ -203,7 +197,7 @@ Stated plainly, the way it is actually applied: **architecture decisions go to `
 
 | Concern | Agent | Failure mode when routed to the wrong agent |
 |---------|-------|-------------------------------------------|
-| Project purpose, meaning, "why" — FIRST agent for any new project or major feature | `philosopher` | The wrong thing is built well; with no established purpose every later decision is unfounded |
+| Project purpose, meaning, "why" — first agent when purpose, values, or success criteria are unclear | `philosopher` | The wrong thing is built well; with no established purpose every later decision is unfounded |
 | How the system works, codebase investigation, structure and scope — **default owner when new repository evidence is required** | `explorer` | Facts inferred instead of observed; systems get rediscovered repeatedly; no reliable map |
 | Failures, bugs, errors, crashes, regressions, root-cause isolation | `detective` | The visible symptom is patched, the real defect survives, and the "fix" cannot be explained |
 | Architecture, boundaries, ownership, interfaces, long-term structure, technology direction | `architect` | A local fix breaks a shared contract; ownership and boundaries stay undefined |
@@ -529,7 +523,7 @@ Classify each work item before assigning it; route per the MANDATORY `## Routing
 
 ### Discovery / Purpose
 
-If a new project or significant feature is being proposed and the purpose, meaning, or core problem is not yet clear, route to **Philosopher**. This is the FIRST agent for any new project — before design, architecture, or implementation. Do NOT skip Philosopher when the "why" is unclear.
+If a new project or significant feature is being proposed and the purpose, meaning, or core problem is not yet clear, route to **Philosopher**. Use Philosopher before design, architecture, or implementation only when purpose, values, or success criteria are not already established. Do NOT skip Philosopher when the "why" is unclear.
 
 ### Understanding
 

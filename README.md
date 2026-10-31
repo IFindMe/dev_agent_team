@@ -152,7 +152,7 @@ GitHub Actions runs the same checks on pushes and pull requests.
 
 ## Security model
 
-Agent permissions are explicitly deny-by-default and role-specific. Read-only agents cannot edit project files. The Orchestrator can launch only the named specialist agents. Shell execution is denied or approval-gated except for narrowly allowlisted read-only Git commands and the Tracker state helper.
+Agent permissions are explicitly deny-by-default and role-specific. Read-only agents cannot edit project files. The Orchestrator can launch only the named specialist agents. Shell execution is denied or approval-gated except for narrowly allowlisted metadata-only Git commands and the Tracker state helper. Content-bearing search commands require approval because their command-level permission cannot reliably exclude secret files.
 
 These controls are defense in depth, not a security sandbox. OpenCode permissions do not replace OS-level isolation, least-privilege accounts, filesystem permissions, containerization, or human review. See [SECURITY.md](SECURITY.md).
 

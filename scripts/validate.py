@@ -104,7 +104,7 @@ def validate(root: Path) -> list[str]:
 
     if "tester" in parsed:
         _, rules = parsed["tester"]
-        if has_rule(rules, "edit", "*", "allow"):
+        if has_rule(rules, "edit", "*", "allow") or has_rule(rules, "edit", "**/*test*", "allow") or has_rule(rules, "edit", "**/*spec*", "allow"):
             errors.append("tester must not have broad production edit permission")
         if not any(r["action"] == "edit" and r["resource"] == "tests/**" and r["effect"] == "allow" for r in rules):
             errors.append("tester must be allowed to edit tests/**")
@@ -135,6 +135,22 @@ def validate(root: Path) -> list[str]:
         if not has_rule(rules, "question", "*", "allow"):
             errors.append("orchestrator must be allowed to ask necessary user questions")
 
+    for agent_id, (_, rules) in parsed.items():
+        if has_rule(rules, "grep", "*", "allow"):
+            errors.append(f"{agent_id}: grep must require approval because its permission resource is the regex, not the searched file path")
+        if has_rule(rules, "read", "*", "allow") and not has_rule(rules, "grep", "*", "ask"):
+            errors.append(f"{agent_id}: repository grep must require approval because the permission resource cannot identify searched paths")
+        for unsafe_command in ("git show *", "git grep *", "git diff *", "git log *"):
+            if has_rule(rules, "shell", unsafe_command, "allow"):
+                errors.append(f"{agent_id}: unsafe content-reading shell allowlist: {unsafe_command}")
+        if agent_id in READ_ONLY_ROLES:
+            allowed_shell = {r["resource"] for r in rules if r["action"] == "shell" and r["effect"] == "allow"}
+            safe_shell = {"pwd", "git status *", "git log --oneline *", "git ls-files *"}
+            if not allowed_shell <= safe_shell:
+                errors.append(f"{agent_id}: read-only role has shell allowlist outside metadata-only commands: {sorted(allowed_shell-safe_shell)}")
+        if agent_id != "orchestrator" and any(r["action"] == "subagent" and r["effect"] == "allow" for r in rules):
+            errors.append(f"{agent_id}: only Orchestrator may launch subagents")
+
     if "designer" in all_content and "WCAG 2.2 AA" not in all_content["designer"]:
         errors.append("designer must use WCAG 2.2 AA as its default baseline")
 
@@ -144,6 +160,10 @@ def validate(root: Path) -> list[str]:
             "mandatory gateway for ALL investigation",
             "any investigation, however small → Explorer (mandatory gateway, no exceptions)",
             "do not skip Philosopher when the purpose is already clear",
+            "FIRST agent for any new project or major feature",
+            "name through the Task tool",
+            '  - action: "todoread"',
+            '  - action: "todowrite"',
         ]
         for phrase in forbidden:
             if phrase in orchestrator:

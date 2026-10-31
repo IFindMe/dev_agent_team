@@ -14,7 +14,7 @@ permissions:
     effect: allow
   - action: "grep"
     resource: "*"
-    effect: allow
+    effect: ask
   - action: "read"
     resource: "*.env"
     effect: deny

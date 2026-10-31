@@ -21,6 +21,12 @@ class FrontmatterValidationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             MODULE.parse_rules(malformed)
 
+    def test_read_only_agent_search_requires_approval(self):
+        for agent in ("architect", "builder", "designer", "detective", "explorer", "maintainer", "reviewer", "tester", "toolsmith", "tracker", "workflow-architect", "writer"):
+            content = (ROOT / "agents" / f"{agent}.md").read_text(encoding="utf-8")
+            self.assertIn('  - action: "grep"\n    resource: "*"\n    effect: ask', content)
+            self.assertNotIn('resource: "git show *"\n    effect: allow', content)
+
     def test_permissions_accept_valid_rules(self):
         valid = 'permissions:\n  - action: "*"\n    resource: "*"\n    effect: deny'
         self.assertEqual(
