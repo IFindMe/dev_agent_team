@@ -1,0 +1,9 @@
+# Runtime workflow state and reports
+.tasks/
+.opencode/reports/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
