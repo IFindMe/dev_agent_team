@@ -7,3 +7,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .coverage
+
+# Installer-owned backups and manifest
+.opencode/backups/
+.opencode/dev_agent_team.manifest

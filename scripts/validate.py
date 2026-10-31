@@ -156,7 +156,7 @@ def validate(root: Path) -> list[str]:
     required_files = [
         "README.md", "SECURITY.md", "AGENTS.md", "install.sh",
         "docs/TASK_STATE.md", "schemas/tasks.schema.json",
-        "scripts/task_state.py", "scripts/validate.py", "tests/test_task_state.py",
+        "scripts/task_state.py", "scripts/validate.py", "tests/test_task_state.py", "tests/test_install.py",
         ".github/workflows/validate.yml",
     ]
     for relative in required_files:

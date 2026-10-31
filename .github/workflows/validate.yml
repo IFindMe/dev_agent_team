@@ -25,5 +25,5 @@ jobs:
         run: python -m compileall -q scripts tests
       - name: Validate agent definitions
         run: python scripts/validate.py
-      - name: Run unit tests
+      - name: Run unit and installer integration tests
         run: python -m unittest discover -s tests -v
