@@ -51,6 +51,9 @@ permissions:
   - action: "todowrite"
     resource: "*"
     effect: allow
+  - action: "question"
+    resource: "*"
+    effect: allow
   - action: "external_directory"
     resource: "*"
     effect: deny

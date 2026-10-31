@@ -20,7 +20,7 @@ References:
 
 | Role | Project reads | Project edits | Shell | Subagents |
 |---|---|---|---|---|
-| Orchestrator | Denied | Denied | Denied | Named specialists only |
+| Orchestrator | Denied | Denied | Denied | Named specialists only; may ask the user clarifying questions |
 | Explorer | Allowed; secrets denied | Report directory only | Approval-gated; read-only Git commands allowlisted | Denied |
 | Detective | Allowed; secrets denied | Report directory only | Approval-gated; read-only Git commands allowlisted | Denied |
 | Architect | Allowed; secrets denied | Report directory only | Approval-gated; read-only Git commands allowlisted | Denied |
@@ -32,7 +32,7 @@ References:
 | Maintainer | Allowed; secrets denied | Approval-gated | Approval-gated | Denied |
 | Writer | Allowed; secrets denied | Documentation paths | Denied | Denied |
 | Tracker | Allowed; secrets denied | Task-state and report paths | Task-state helper; other shell commands approval-gated | Denied |
-| Philosopher | No general repository access | `philosophy.md` and reports | Denied | Denied |
+| Philosopher | No general repository access | `philosophy.md` and reports | Denied | Denied; may ask the user questions |
 | Workflow Architect | Allowed; secrets denied | Report directory only | Denied | Denied |
 
 ## Important limitations

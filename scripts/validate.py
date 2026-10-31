@@ -127,6 +127,13 @@ def validate(root: Path) -> list[str]:
         _, rules = parsed["philosopher"]
         if not has_rule(rules, "edit", "philosophy.md", "allow"):
             errors.append("philosopher must be allowed to maintain philosophy.md")
+        if not has_rule(rules, "question", "*", "allow"):
+            errors.append("philosopher must be allowed to ask the user questions")
+
+    if "orchestrator" in parsed:
+        _, rules = parsed["orchestrator"]
+        if not has_rule(rules, "question", "*", "allow"):
+            errors.append("orchestrator must be allowed to ask necessary user questions")
 
     if "designer" in all_content and "WCAG 2.2 AA" not in all_content["designer"]:
         errors.append("designer must use WCAG 2.2 AA as its default baseline")
